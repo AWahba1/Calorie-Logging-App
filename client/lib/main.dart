@@ -1,14 +1,31 @@
+import 'package:camera/camera.dart';
+import 'package:client/widgets/camera_page.dart';
 import 'package:flutter/material.dart';
 
-void main()=> runApp(App());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+
+  // Get a specific camera from the list of available cameras.
+  final firstCamera = cameras.first;
+
+  runApp(App(firstCamera));
+}
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  final camera;
+
+  App(this.camera);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home:Home(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      //initialRoute:TakePictureScreen.route ,
+      routes: {
+        '/':(ctx)=> Home(),
+        TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera)
+      },
     );
   }
 }
@@ -23,7 +40,10 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/add-food');
+        },
+        child: const Text("Click"));
   }
 }
-
