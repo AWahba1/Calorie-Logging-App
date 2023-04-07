@@ -13,7 +13,7 @@ class JournalFoodItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Card(
-          margin:const EdgeInsets.only(top:5, left:5, right:5),
+          margin:const EdgeInsets.only( left:5, right:5),
           elevation:2,
           child:ListTile(
             leading:CircleAvatar(

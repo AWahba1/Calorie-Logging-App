@@ -18,6 +18,7 @@ class JournalList extends StatelessWidget {
       itemBuilder: (context, index) {
         return JournalFoodItem(foodItems[index]);
       },
+
     );
   }
 }
