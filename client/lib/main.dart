@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:client/widgets/camera_page.dart';
 import 'package:flutter/material.dart';
+import './widgets/journal_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +22,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //initialRoute:TakePictureScreen.route ,
+      initialRoute:JournalPage.route ,
       routes: {
         '/':(ctx)=> Home(),
+        JournalPage.route:(ctx)=> JournalPage(),
         TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera)
       },
     );
