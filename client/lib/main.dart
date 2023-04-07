@@ -23,7 +23,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute:FoodItemPage.route ,
+      initialRoute:JournalPage.route ,
       routes: {
         '/':(ctx)=> Home(),
         JournalPage.route:(ctx)=> JournalPage(),

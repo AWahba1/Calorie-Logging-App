@@ -12,24 +12,43 @@ class FoodItemPage extends StatefulWidget {
 }
 
 class _FoodItemPageState extends State<FoodItemPage> {
-  FoodItem foodItem = FoodItem(
-      name: "Banana",
-      image:
-          'https://www.allrecipes.com/thmb/hFs2oTo2hWflhFy7ORU3Sv3EHNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Bananas-by-Mike-DieterMeredith-03866d9ab12a40d38eb452b344e6a9ea.jpg',
-      weight: 210,
-      fats: 50,
-      carbs: 70,
-      proteins: 90,
-      calories: 500);
-  TextEditingController _quantityController = TextEditingController(text: '1');
-  TextEditingController _weightController = TextEditingController(text: '591');
+  // FoodItem foodItem = FoodItem(
+  //     name: "Banana",
+  //     image:
+  //         'https://www.allrecipes.com/thmb/hFs2oTo2hWflhFy7ORU3Sv3EHNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Bananas-by-Mike-DieterMeredith-03866d9ab12a40d38eb452b344e6a9ea.jpg',
+  //     weight: 210,
+  //     fats: 50,
+  //     carbs: 70,
+  //     proteins: 90,
+  //     calories: 500);
 
+  late FoodItem foodItem;
+  late VoidCallback onDelete;
+  late Function onSaving;
+  late TextEditingController _quantityController;
+  late TextEditingController _weightController;
+  bool initialized = false;
   String chosenWeightUnit = 'g'; // g or kg
 
   @override
   void initState() {
-    // TODO: implement initState
-    //ModalRoute.of(context)?.settings.arguments as Map<String, String>;
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (initialized) return;
+
+    final passedArguments =
+        ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
+    foodItem = passedArguments['foodItem'] as FoodItem;
+    onDelete = passedArguments['onDelete'] as VoidCallback;
+    onSaving = passedArguments['onSaving'] as Function;
+    _quantityController = TextEditingController(text: '${foodItem.quantity}');
+    _weightController = TextEditingController(text: '${foodItem.weight}');
+
+    initialized = true;
   }
 
   Widget buildRing(String innerText, String label, Color color) {
@@ -37,7 +56,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
       child: Column(
         children: [
           Container(
-              margin: EdgeInsets.only(bottom: 5),
+              margin: const EdgeInsets.only(bottom: 5),
               child: CircleAvatar(
                 radius: 35,
                 backgroundColor: color,
@@ -58,24 +77,29 @@ class _FoodItemPageState extends State<FoodItemPage> {
 
   Widget addQuantityRow() {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       height: 70,
       child: Row(
         children: [
-          Expanded(child: Text("Quantity")),
+          const Expanded(child: Text("Quantity")),
           Container(
             width: 100,
             child: TextField(
               textAlign: TextAlign.center,
               controller: _quantityController,
-              keyboardType: TextInputType.numberWithOptions(decimal: false),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
               onChanged: (val) {
-                // macros and calories recalculation here
+                // TODO: macros and calories recalculation here
+                foodItem.quantity=int.parse(val);
+                foodItem.fats=1000; // TODO: remove this
+                // quantity changes
+                // calories changes
               },
             ),
           )
@@ -86,30 +110,33 @@ class _FoodItemPageState extends State<FoodItemPage> {
 
   Widget addWeightRow() {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       height: 80,
       child: Row(
         children: [
-          Expanded(child: Text("Weight")),
+          const Expanded(child: Text("Weight")),
           Container(
             width: 100,
             child: TextField(
               textAlign: TextAlign.center,
               controller: _weightController,
-              keyboardType: TextInputType.numberWithOptions(decimal: false),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
               onChanged: (val) {
-                // macros and calories recalculation here
+                // TODO: macros and calories recalculation here
+                foodItem.weight = int.parse(val); // handle decimals?
+                foodItem.proteins=1000; // TODO: remove this
+                // calories change
               },
             ),
           ),
           Container(
               width: 70,
-              //height:100,
               child: DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -144,56 +171,67 @@ class _FoodItemPageState extends State<FoodItemPage> {
           IconButton(
               icon: const Icon(Icons.delete),
               tooltip: 'Delete item',
-              onPressed: () {})
+              onPressed: () {
+                onDelete();
+                Navigator.of(context).pop();
+              })
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 250,
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 15),
-            child: Image.network(
-              foodItem.image!,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            child: Row(
-              children: [
-                buildRing(
-                    "${foodItem.calories}\n kcal", "Calories", Colors.purple),
-                buildRing("${foodItem.carbs}g", "Carbohydrates", Colors.red),
-                buildRing("${foodItem.proteins}g", "Protein", Colors.orange),
-                buildRing("${foodItem.fats}g", "Fats", Colors.green),
-              ],
-            ),
-          ),
-          const Divider(
-            thickness: 1,
-          ),
-          addQuantityRow(),
-          const Divider(
-            thickness: 1,
-          ),
-          addWeightRow(),
-          Container(
-            // alignment: Alignment.center,
-            width:double.infinity,
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(top:50),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: 250,
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 15),
+              child: Image.network(
+                foodItem.image!,
+                fit: BoxFit.cover,
               ),
-              child: const Text("Save Changes"),
             ),
-          )
-        ],
+            Container(
+              width: double.infinity,
+              child: Row(
+                children: [
+                  buildRing(
+                      "${foodItem.calories}\n kcal", "Calories", Colors.purple),
+                  buildRing("${foodItem.carbs}g", "Carbohydrates", Colors.red),
+                  buildRing("${foodItem.proteins}g", "Protein", Colors.orange),
+                  buildRing("${foodItem.fats}g", "Fats", Colors.green),
+                ],
+              ),
+            ),
+            const Divider(
+              thickness: 1,
+              height: 25,
+            ),
+            addQuantityRow(),
+            const Divider(
+              thickness: 1,
+              height: 25,
+            ),
+            addWeightRow(),
+            Container(
+              // alignment: Alignment.center,
+              height: 70,
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(top: 50),
+              child: ElevatedButton(
+                onPressed: () {
+                  onSaving(foodItem);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text("Save Changes"),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

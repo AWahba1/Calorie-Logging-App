@@ -7,6 +7,7 @@ class FoodItem {
    int? carbs=0; // grams
    int? fats=0; // grams
    int? proteins=0; // grams
+   int quantity=1;
 
-   FoodItem({this.id,this.image, this.name, this.weight, this.calories, this.carbs, this.fats, this.proteins});
+   FoodItem({this.id,this.image, this.name, this.weight, this.calories, this.carbs, this.fats, this.proteins,});
 }

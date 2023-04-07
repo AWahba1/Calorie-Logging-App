@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/food_item.dart';
 import 'dart:math';
 import './journal_chart.dart';
-import './journal_list.dart';
 import './journal_date_picker.dart';
+import './journal_food_item.dart';
 
 class JournalPage extends StatefulWidget {
   //const JournalPage({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class JournalPage extends StatefulWidget {
 }
 
 class _JournalPageState extends State<JournalPage> {
-  Random rand = new Random();
+  Random rand = Random();
   List<FoodItem> foodItems = [
     FoodItem(
       name: "Banana",
@@ -67,16 +67,49 @@ class _JournalPageState extends State<JournalPage> {
   ];
 
   DateTime _currentDate = DateTime.now();
-   int totalCalories=0;
-   double totalFats=0;
-   double totalProteins=0;
-   double totalCarbs=0;
+  int totalCalories = 0;
+  double totalFats = 0;
+  double totalProteins = 0;
+  double totalCarbs = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO: remove static data & fetch from backend
+    int index=0;
+    for (var food in foodItems) {
+      food.weight = rand.nextInt(200);
+      food.calories = rand.nextInt(2000);
+      food.carbs = rand.nextInt(100);
+      food.fats = rand.nextInt(100);
+      food.proteins = rand.nextInt(100);
+      food.id=index++;
+    }
+
+
+  }
+  // calculate macros in current food items
+  void calculateMacros()
+  {
+    totalCarbs=0;
+    totalFats=0;
+    totalFats=0;
+    totalProteins=0;
+
+    for (var food in foodItems) {
+      totalCarbs += food.carbs!;
+      totalFats += food.fats!;
+      totalProteins += food.proteins!;
+      totalCalories += food.calories!;
+    }
+  }
 
   void modifyCurrentDate(DateTime newDate) {
     setState(() {
       _currentDate = newDate;
     });
-    // fetch data equivalent to the selected date
+    // TODO: fetch data equivalent to the new selected date
   }
 
   void onCalendarPress() async {
@@ -91,30 +124,41 @@ class _JournalPageState extends State<JournalPage> {
     modifyCurrentDate(chosenDate);
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    for (var food in foodItems) {
-      food.weight = rand.nextInt(200);
-      food.calories = rand.nextInt(2000);
-      food.carbs = rand.nextInt(100);
-      food.fats = rand.nextInt(100);
-      food.proteins = rand.nextInt(100);
+  // void onFoodItemPress()
+  // {
+  //
+  // }
+
+  void onDeletingItem(FoodItem itemToDelete) {
+    //print("${itemToDelete.name} ${itemToDelete.id}");
+    setState(() {
+      foodItems.removeWhere((foodItem) => foodItem.id == itemToDelete.id);
+    });
+    //print(foodItems.length);
+    // TODO: delete item from backend
+  }
+
+  void onSavingChanges(FoodItem modifiedItem) {
+    int index =
+        foodItems.indexWhere((foodItem) => foodItem.id == modifiedItem.id);
+
+    //print(modifiedItem.weight);
+    if (index != -1) {
+      print("Index $index");
+      print("Weight ${modifiedItem.weight}");
+      print('Quantity ${modifiedItem.quantity}');
+      setState(() {
+        foodItems[index] = modifiedItem;
+      });
     }
-    // assign total fats, proteins & carbs
-    for (var food in foodItems) {
-      totalCarbs += food.carbs!;
-      totalFats += food.fats!;
-      totalProteins += food.proteins!;
-      totalCalories += food.calories!;
-    }
+    // TODO: save changes to the food item in backend
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    //print(currentDate);
+    calculateMacros();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Journal"),
@@ -142,7 +186,6 @@ class _JournalPageState extends State<JournalPage> {
             right: 0,
             bottom: 0,
             child: ListView(
-              padding: EdgeInsets.zero,
               children: [
                 JournalChart(
                   totalCalories: totalCalories,
@@ -150,7 +193,17 @@ class _JournalPageState extends State<JournalPage> {
                   totalCarbs: totalCarbs,
                   totalProteins: totalProteins,
                 ),
-                JournalList(foodItems)
+                ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: foodItems.length,
+                    itemBuilder: (context, index) {
+                      return JournalFoodItem(
+                        foodItems[index],
+                        onDelete: () => onDeletingItem(foodItems[index]),
+                        onSaving: onSavingChanges,
+                      );
+                    }),
               ],
             ),
           ),
