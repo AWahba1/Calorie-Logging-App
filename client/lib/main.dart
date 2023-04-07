@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:client/widgets/camera_page.dart';
 import 'package:flutter/material.dart';
 import './widgets/journal_page.dart';
+import './widgets/food_item_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,11 +23,12 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute:JournalPage.route ,
+      initialRoute:FoodItemPage.route ,
       routes: {
         '/':(ctx)=> Home(),
         JournalPage.route:(ctx)=> JournalPage(),
-        TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera)
+        TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera),
+        FoodItemPage.route: (ctx)=> FoodItemPage(),
       },
     );
   }

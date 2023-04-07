@@ -33,7 +33,15 @@ class JournalFoodItem extends StatelessWidget {
                 const Text('kcal')
               ],
             ),
-            onTap: (){},
+            onTap: (){
+              // Navigator.of(context).pushNamed(
+              //     CategoryMealsScreen.routeName,
+              //     arguments: {
+              //     'id': id,
+              //     'title': title,
+              //     },
+              //)
+            },
           )
       ),
     );
