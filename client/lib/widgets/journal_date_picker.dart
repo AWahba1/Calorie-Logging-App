@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../models/history_model.dart';
 
 class JournalDatePicker extends StatelessWidget {
   //const JournalDatePicker({Key? key}) : super(key: key);
 
-  DateTime currentDate;
+  //VoidCallback onCalendarPress;
+  late HistoryModel history;
 
-  VoidCallback onNextDay;
-  VoidCallback onPreviousDay;
-  VoidCallback onCalendarPress;
+  //JournalDatePicker({required this.onCalendarPress});
 
-
-  JournalDatePicker(
-      {required this.currentDate, required this.onNextDay, required this.onPreviousDay,
-      required this.onCalendarPress});
 
 
   String get getCurrentDate {
     final now = DateTime.now();
-    final differenceDates = currentDate
-        .difference(now)
-        .inDays;
+    final currentDate = history.currentDate;
+
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final historyDate = DateTime(currentDate.year, currentDate.month, currentDate.day);
+
+    final differenceDates = historyDate.difference(nowDate).inDays;
     switch (differenceDates) {
       case 0:
         return "Today";
@@ -29,11 +29,21 @@ class JournalDatePicker extends StatelessWidget {
       case -1:
         return "Yesterday";
       default:
-        return DateFormat('dd MMM, yyyy').format(currentDate);
+        return DateFormat('dd MMM, yyyy').format(history.currentDate);
     }
   }
 
+  void onCalendarPress(BuildContext context) async {
+    DateTime? chosenDate = await showDatePicker(
+      context: context,
+      initialDate: history.currentDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(history.currentDate.year + 3),
+    );
 
+    if (chosenDate == null) return;
+    history.setDate(chosenDate);
+  }
 
   Widget buildDateButton({required IconData icon, required onPressHandler}) {
     return Container(
@@ -52,21 +62,23 @@ class JournalDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    history = Provider.of<HistoryModel>(context, listen:false);
+
     return Padding(
       padding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           buildDateButton(
               icon: Icons.navigate_before_rounded,
-              onPressHandler: onPreviousDay),
-          SizedBox(width: 40),
+              onPressHandler: () => history
+                  .setDate(history.currentDate.add(const Duration(days: -1)))),
+          const SizedBox(width: 40),
           Expanded(
             child: ElevatedButton.icon(
               icon: const Icon(Icons.calendar_month),
               label: Text(getCurrentDate),
-              onPressed: onCalendarPress,
+              onPressed: ()=>onCalendarPress(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[300],
                 foregroundColor: Colors.black54,
@@ -76,10 +88,11 @@ class JournalDatePicker extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 40),
+          const SizedBox(width: 40),
           buildDateButton(
               icon: Icons.navigate_next_outlined,
-              onPressHandler: onNextDay)
+              onPressHandler: () => history
+                  .setDate(history.currentDate.add(const Duration(days: 1))))
         ],
       ),
     );

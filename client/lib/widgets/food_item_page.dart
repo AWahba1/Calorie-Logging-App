@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/food_item.dart';
-import 'package:pie_chart/pie_chart.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../models/history_model.dart';
 
 class FoodItemPage extends StatefulWidget {
   //const FoodItemPage({Key? key}) : super(key: key);
@@ -12,23 +13,20 @@ class FoodItemPage extends StatefulWidget {
 }
 
 class _FoodItemPageState extends State<FoodItemPage> {
-  // FoodItem foodItem = FoodItem(
-  //     name: "Banana",
-  //     image:
-  //         'https://www.allrecipes.com/thmb/hFs2oTo2hWflhFy7ORU3Sv3EHNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Bananas-by-Mike-DieterMeredith-03866d9ab12a40d38eb452b344e6a9ea.jpg',
-  //     weight: 210,
-  //     fats: 50,
-  //     carbs: 70,
-  //     proteins: 90,
-  //     calories: 500);
-
   late FoodItem foodItem;
-  late VoidCallback onDelete;
-  late Function onSaving;
+  late HistoryModel history;
+  late int foodItemIndex;
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
   bool initialized = false;
   String chosenWeightUnit = 'g'; // g or kg
+
+  late int quantity;
+  late int weight;
+  late int calories;
+  late int fats;
+  late int carbs;
+  late int proteins;
 
   @override
   void initState() {
@@ -40,13 +38,25 @@ class _FoodItemPageState extends State<FoodItemPage> {
     super.didChangeDependencies();
     if (initialized) return;
 
-    final passedArguments =
-        ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
-    foodItem = passedArguments['foodItem'] as FoodItem;
-    onDelete = passedArguments['onDelete'] as VoidCallback;
-    onSaving = passedArguments['onSaving'] as Function;
-    _quantityController = TextEditingController(text: '${foodItem.quantity}');
-    _weightController = TextEditingController(text: '${foodItem.weight}');
+    foodItemIndex=
+        ModalRoute.of(context)?.settings.arguments as int;
+    // foodItem = passedArguments['foodItem'] as FoodItem;
+    // _quantityController = TextEditingController(text: '${foodItem.quantity}');
+    // _weightController = TextEditingController(text: '${foodItem.weight}');
+
+    history = Provider.of<HistoryModel>(context, listen: false);
+    foodItem = history.getFoodItemByPosition(foodItemIndex);
+
+    quantity=foodItem.quantity!;
+    weight=foodItem.weight!;
+    calories=foodItem.calories!;
+    fats=foodItem.fats!;
+    proteins=foodItem.proteins!;
+    carbs=foodItem.carbs!;
+
+
+    _quantityController = TextEditingController(text: '$quantity');
+    _weightController = TextEditingController(text: '$weight');
 
     initialized = true;
   }
@@ -75,7 +85,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
     );
   }
 
-  Widget addQuantityRow() {
+  Widget addQuantityRow(FoodItem foodItem) {
     return Container(
       padding: const EdgeInsets.all(10),
       height: 70,
@@ -87,6 +97,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
             child: TextField(
               textAlign: TextAlign.center,
               controller: _quantityController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: false),
               decoration: InputDecoration(
@@ -95,11 +106,12 @@ class _FoodItemPageState extends State<FoodItemPage> {
                 ),
               ),
               onChanged: (val) {
-                // TODO: macros and calories recalculation here
-                foodItem.quantity=int.parse(val);
-                foodItem.fats=1000; // TODO: remove this
-                // quantity changes
-                // calories changes
+                if (val.isEmpty) return;
+                setState(() {
+                  // TODO: macros and calories recalculation here
+                  fats = 2000;
+                  quantity=int.parse(val);
+                });
               },
             ),
           )
@@ -108,7 +120,8 @@ class _FoodItemPageState extends State<FoodItemPage> {
     );
   }
 
-  Widget addWeightRow() {
+
+  Widget addWeightRow(FoodItem foodItem) {
     return Container(
       padding: const EdgeInsets.all(10),
       height: 80,
@@ -120,6 +133,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
             child: TextField(
               textAlign: TextAlign.center,
               controller: _weightController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: false),
               decoration: InputDecoration(
@@ -128,9 +142,14 @@ class _FoodItemPageState extends State<FoodItemPage> {
                 ),
               ),
               onChanged: (val) {
-                // TODO: macros and calories recalculation here
-                foodItem.weight = int.parse(val); // handle decimals?
-                foodItem.proteins=1000; // TODO: remove this
+                if (val.isEmpty) return;
+                setState(() {
+                  // TODO: macros and calories recalculation here
+                  // TODO: handle choice g / kg
+                  weight = int.parse(val);
+                  proteins = 1000; // TODO: remove this
+                });
+
                 // calories change
               },
             ),
@@ -143,7 +162,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                alignment: Alignment.topLeft,
+                alignment: Alignment.center,
                 value: chosenWeightUnit,
                 onChanged: (newValue) {
                   setState(() {
@@ -164,6 +183,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('${foodItem.name}'),
@@ -172,7 +192,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               icon: const Icon(Icons.delete),
               tooltip: 'Delete item',
               onPressed: () {
-                onDelete();
+                history.removeFoodItem(foodItem.id!);
                 Navigator.of(context).pop();
               })
         ],
@@ -194,10 +214,10 @@ class _FoodItemPageState extends State<FoodItemPage> {
               child: Row(
                 children: [
                   buildRing(
-                      "${foodItem.calories}\n kcal", "Calories", Colors.purple),
-                  buildRing("${foodItem.carbs}g", "Carbohydrates", Colors.red),
-                  buildRing("${foodItem.proteins}g", "Protein", Colors.orange),
-                  buildRing("${foodItem.fats}g", "Fats", Colors.green),
+                      "${calories}\n kcal", "Calories", Colors.purple),
+                  buildRing("${carbs}g", "Carbs", Colors.red),
+                  buildRing("${proteins}g", "Protein", Colors.orange),
+                  buildRing("${fats}g", "Fats", Colors.green),
                 ],
               ),
             ),
@@ -205,12 +225,12 @@ class _FoodItemPageState extends State<FoodItemPage> {
               thickness: 1,
               height: 25,
             ),
-            addQuantityRow(),
+            addQuantityRow(foodItem),
             const Divider(
               thickness: 1,
               height: 25,
             ),
-            addWeightRow(),
+            addWeightRow(foodItem),
             Container(
               // alignment: Alignment.center,
               height: 70,
@@ -219,7 +239,9 @@ class _FoodItemPageState extends State<FoodItemPage> {
               margin: const EdgeInsets.only(top: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  onSaving(foodItem);
+                  history.modifyFoodItem(FoodItem(id:foodItem.id, name:foodItem.name,
+                  image:foodItem.image,proteins: proteins, carbs: carbs, fats: fats, weight: weight,
+                  calories:calories, quantity:quantity));
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(

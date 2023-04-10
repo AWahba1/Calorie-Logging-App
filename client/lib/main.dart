@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
+import 'package:client/models/history_model.dart';
 import 'package:client/widgets/camera_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './widgets/journal_page.dart';
 import './widgets/food_item_page.dart';
 
@@ -21,15 +23,18 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute:JournalPage.route ,
-      routes: {
-        '/':(ctx)=> Home(),
-        JournalPage.route:(ctx)=> JournalPage(),
-        TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera),
-        FoodItemPage.route: (ctx)=> FoodItemPage(),
-      },
+    return ChangeNotifierProvider(
+      create: (_)=> HistoryModel(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute:JournalPage.route ,
+        routes: {
+          '/':(ctx)=> Home(),
+          JournalPage.route:(ctx)=> JournalPage(),
+          TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera),
+          FoodItemPage.route: (ctx)=> FoodItemPage(),
+        },
+      ),
     );
   }
 }

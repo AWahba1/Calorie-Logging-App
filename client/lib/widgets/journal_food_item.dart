@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import '../models/food_item.dart';
+import 'package:provider/provider.dart';
+import '../models/history_model.dart';
 import './food_item_page.dart';
 
 class JournalFoodItem extends StatelessWidget {
   //const JournalFoodItem({Key? key}) : super(key: key);
 
-  FoodItem foodItem;
-  VoidCallback onDelete;
-  Function onSaving;
-
-  JournalFoodItem(this.foodItem,
-      {required this.onDelete, required this.onSaving});
+  final int foodItemIndex;
+  JournalFoodItem(this.foodItemIndex);
 
   @override
   Widget build(BuildContext context) {
+  final foodItem = Provider.of<HistoryModel>(context).getFoodItemByPosition(foodItemIndex);
+
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Card(
@@ -36,14 +35,12 @@ class JournalFoodItem extends StatelessWidget {
               children: [Text('${foodItem.calories!}'), const Text('kcal')],
             ),
             onTap: () {
-              //print(foodItem);
               Navigator.of(context).pushNamed(
                 FoodItemPage.route,
-                arguments: {
-                  'foodItem': foodItem,
-                  'onDelete': onDelete,
-                  'onSaving': onSaving,
-                },
+                arguments: foodItemIndex
+                // arguments: {
+                //   'foodItem': foodItem,
+                // },
               );
             },
           )),
