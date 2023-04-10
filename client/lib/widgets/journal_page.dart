@@ -11,6 +11,29 @@ class JournalPage extends StatelessWidget {
   //const JournalPage({Key? key}) : super(key: key);
   static const route = '/journal';
 
+  Widget buildEmptyHistoryView() {
+    return Column(
+      children: [
+        Container(
+            margin: const EdgeInsets.all(20),
+            child: Image.asset('assets/empty_journal.jpg')),
+        Container(
+          margin:const EdgeInsets.all(10),
+          child: const Text(
+            "History is empty!",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+          ),
+        ),
+        const Text("Click the add button \n and start logging your food intake.", textAlign: TextAlign.center,
+        style:TextStyle(
+          fontSize: 18,
+          color: Colors.black54
+        ))
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -43,23 +66,25 @@ class JournalPage extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 0,
-            child: ListView(
-              children: [
-                JournalChart(
-                  totalCalories: history.totalCalories,
-                  totalFats: history.totalFats,
-                  totalCarbs: history.totalCarbs,
-                  totalProteins: history.totalProteins,
-                ),
-                ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: history.foodItems.length,
-                    itemBuilder: (context, index) {
-                      return JournalFoodItem(index);
-                    }),
-              ],
-            ),
+            child: history.foodItems.isEmpty
+                ? buildEmptyHistoryView()
+                : ListView(
+                    children: [
+                      JournalChart(
+                        totalCalories: history.totalCalories,
+                        totalFats: history.totalFats,
+                        totalCarbs: history.totalCarbs,
+                        totalProteins: history.totalProteins,
+                      ),
+                      ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: history.foodItems.length,
+                          itemBuilder: (context, index) {
+                            return JournalFoodItem(index);
+                          }),
+                    ],
+                  ),
           ),
         ],
       ),

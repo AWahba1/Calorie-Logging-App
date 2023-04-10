@@ -1,6 +1,7 @@
 import 'package:client/widgets/camera_page.dart';
 import 'package:client/widgets/food_item_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/history_model.dart';
 
 class PredictionResults extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PredictionResultsState extends State<PredictionResults> {
 
   // List<FoodItem>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
+  late HistoryModel history;
 
   Widget showTop1Prediction(FoodItem foodItem, VoidCallback onEditPress,
       VoidCallback onAddButtonPress) {
@@ -79,8 +81,9 @@ class _PredictionResultsState extends State<PredictionResults> {
     });
   }
 
-  void onTopOneAddButtonPress(int index) {
+  void onTopOneAddButtonPress(FoodItem topOneItem) {
     // TODO: send to backend & based on response show corresponding snackbar
+    history.addFoodItem(topOneItem);
     const isRequestSuccessful = true;
     final snackBar = isRequestSuccessful
         ? buildSnackBar(
@@ -88,6 +91,7 @@ class _PredictionResultsState extends State<PredictionResults> {
         : buildSnackBar('Error while adding food item! Please try again',
             Colors.red, const Duration(seconds: 1));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
   }
 
   SnackBar buildSnackBar(String text, Color color, Duration duration) {
@@ -128,12 +132,15 @@ class _PredictionResultsState extends State<PredictionResults> {
     // TODO: fetch macros & calories based on qty=1 & weight=100
     return [
       showTop1Prediction(topOneItem, () {
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).push(
+          MaterialPageRoute(
             builder: (context) => FoodItemPage(
-                  isCameraPageCaller: true,
-                  foodItem: topOneItem,
-                )));
-      }, () => onTopOneAddButtonPress(currentItemIndex)),
+              isCameraPageCaller: true,
+              foodItem: topOneItem,
+            ),
+          ),
+        );
+      }, () => onTopOneAddButtonPress(topOneItem)),
       const Text(
         "Consider also:",
         style: TextStyle(
@@ -161,6 +168,7 @@ class _PredictionResultsState extends State<PredictionResults> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    history = Provider.of<HistoryModel>(context, listen: false);
 
     return Container(
       width: mediaQuery.size.width,
