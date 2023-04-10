@@ -5,6 +5,8 @@ import './journal_date_picker.dart';
 import './journal_food_item.dart';
 import 'package:provider/provider.dart';
 
+import 'camera_page.dart';
+
 class JournalPage extends StatelessWidget {
   //const JournalPage({Key? key}) : super(key: key);
   static const route = '/journal';
@@ -18,6 +20,14 @@ class JournalPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Journal"),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(TakePictureScreen.route);
+        },
+        tooltip: "Add new item",
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
       body: Stack(
         children: [
           Positioned(

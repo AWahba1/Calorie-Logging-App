@@ -13,6 +13,7 @@ class _PredictionResultsState extends State<PredictionResults> {
     "Apple Pie",
     "French Fries"
   ];
+
   //List<String>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
 
@@ -43,7 +44,6 @@ class _PredictionResultsState extends State<PredictionResults> {
         subtitle: const Text("2,500 kcal"),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_sharp),
-          //color: Colors.white,
           onPressed: onAddButtonPress,
           tooltip: "Add item",
         ),
@@ -57,9 +57,10 @@ class _PredictionResultsState extends State<PredictionResults> {
       child: OutlinedButton(
         onPressed: () => onOtherPredictionPress(index),
         style: OutlinedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        )),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+        ),
         child: Text(predictedItems[index]),
       ),
     );
@@ -86,8 +87,6 @@ class _PredictionResultsState extends State<PredictionResults> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
-
   SnackBar buildSnackBar(String text, Color color, Duration duration) {
     return SnackBar(
       content: Text(text, style: const TextStyle(fontSize: 15)),
@@ -96,32 +95,31 @@ class _PredictionResultsState extends State<PredictionResults> {
     );
   }
 
-  List<Widget> buildEmptyBottomSheet()
-  {
+  List<Widget> buildEmptyBottomSheet() {
     return [
       Container(
-       // width: double.infinity,
-        padding:EdgeInsets.all(30),
-       // alignment: Alignment.center,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-           children: const [
-             Icon(Icons.image_search,
-             size: 50),
-             SizedBox(height:5),
+          // width: double.infinity,
+          padding: const EdgeInsets.all(30),
+          // alignment: Alignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.image_search, size: 50),
+              SizedBox(height: 5),
               Text("No food items found!"),
-              SizedBox(height:20),
-              Text("Start adding by hovering your camera on the desired food item.", textAlign: TextAlign.center,)
-           ],
-        )
-      )
+              SizedBox(height: 20),
+              Text(
+                "Start adding by hovering your camera on the desired food item.",
+                textAlign: TextAlign.center,
+              )
+            ],
+          ))
     ];
   }
 
-  List<Widget> buildFullBottomSheet()
-  {
+  List<Widget> buildFullBottomSheet() {
     final topOneItem = predictedItems[currentItemIndex];
-    return[
+    return [
       showTop1Prediction(
           topOneItem, () => onTopOneAddButtonPress(currentItemIndex)),
       const Text(
@@ -152,36 +150,35 @@ class _PredictionResultsState extends State<PredictionResults> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-
-
-
     return Container(
-        width: mediaQuery.size.width,
-        height: 300,
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0),
-          ),
+      width: mediaQuery.size.width,
+      height: 300,
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Suggestions",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                //color: Colors.white,
-              ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Suggestions",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              //color: Colors.white,
             ),
-            const Divider(thickness: 0.5),
-            if (predictedItems.isEmpty)...buildEmptyBottomSheet()
-            else ...buildFullBottomSheet()
-          ],
-        ),
+          ),
+          const Divider(thickness: 0.5),
+          if (predictedItems.isEmpty)
+            ...buildEmptyBottomSheet()
+          else
+            ...buildFullBottomSheet()
+        ],
+      ),
     );
   }
 }

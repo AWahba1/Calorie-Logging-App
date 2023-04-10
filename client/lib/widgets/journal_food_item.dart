@@ -29,10 +29,10 @@ class JournalFoodItem extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            subtitle: Text('${foodItem.weight!}g'),
+            subtitle: Text('${foodItem.weight} ${foodItem.weightUnit==WeightUnit.grams?'g':'kg'}'),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text('${foodItem.calories!}'), const Text('kcal')],
+              children: [Text('${foodItem.calories}'), const Text('kcal')],
             ),
             onTap: () {
               Navigator.of(context).pushNamed(

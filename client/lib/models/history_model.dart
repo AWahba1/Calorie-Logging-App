@@ -2,27 +2,33 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 
+enum WeightUnit{
+  grams, kilograms
+}
+
 class FoodItem {
   int? id;
   String? image;
   String? name;
-  int? weight = 0; // in grams
-  int? calories = 0;
-  int? carbs = 0; // grams
-  int? fats = 0; // grams
-  int? proteins = 0; // grams
-  int? quantity = 1;
+  int weight; // in grams
+  WeightUnit weightUnit;
+  int calories;
+  int carbs; // grams
+  int fats; // grams
+  int proteins; // grams
+  int quantity;
 
   FoodItem({
     this.id,
     this.image,
     this.name,
-    this.weight,
-    this.calories,
-    this.carbs,
-    this.fats,
-    this.proteins,
-    this.quantity
+    this.weight=0,
+    this.calories=0,
+    this.carbs=0,
+    this.fats=0,
+    this.proteins=0,
+    this.quantity=1,
+    this.weightUnit = WeightUnit.grams,
   });
 }
 
@@ -87,6 +93,7 @@ class HistoryModel with ChangeNotifier {
     //TODO: remove random values & fetch from backend
 
     //_foodItems = _fetchFoodItems();
+    print(_foodItems[0].weightUnit);
   }
 
   DateTime get currentDate => _currentDate;
@@ -94,16 +101,16 @@ class HistoryModel with ChangeNotifier {
   List<FoodItem> get foodItems => _foodItems;
 
   int get totalCalories =>
-      _foodItems.fold(0, (total, element) => total + element.calories!);
+      _foodItems.fold(0, (total, element) => total + element.calories);
 
   int get totalCarbs =>
-      _foodItems.fold(0, (total, element) => total + element.carbs!);
+      _foodItems.fold(0, (total, element) => total + element.carbs);
 
   int get totalProteins =>
-      _foodItems.fold(0, (total, element) => total + element.proteins!);
+      _foodItems.fold(0, (total, element) => total + element.proteins);
 
   int get totalFats =>
-      _foodItems.fold(0, (total, element) => total + element.fats!);
+      _foodItems.fold(0, (total, element) => total + element.fats);
 
   void setDate(DateTime newDate) {
     _currentDate = newDate;
@@ -161,7 +168,6 @@ class HistoryModel with ChangeNotifier {
       food.fats = rand.nextInt(100);
       food.proteins = rand.nextInt(100);
       food.id = index++;
-      food.quantity=1;
     }
   }
 }

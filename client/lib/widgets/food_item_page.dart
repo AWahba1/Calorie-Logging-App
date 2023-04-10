@@ -19,7 +19,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
   bool initialized = false;
-  String chosenWeightUnit = 'g'; // g or kg
+  late String chosenWeightUnit; // 'g' or 'kg'
 
   late int quantity;
   late int weight;
@@ -38,25 +38,21 @@ class _FoodItemPageState extends State<FoodItemPage> {
     super.didChangeDependencies();
     if (initialized) return;
 
-    foodItemIndex=
-        ModalRoute.of(context)?.settings.arguments as int;
-    // foodItem = passedArguments['foodItem'] as FoodItem;
-    // _quantityController = TextEditingController(text: '${foodItem.quantity}');
-    // _weightController = TextEditingController(text: '${foodItem.weight}');
+    foodItemIndex = ModalRoute.of(context)?.settings.arguments as int;
 
     history = Provider.of<HistoryModel>(context, listen: false);
     foodItem = history.getFoodItemByPosition(foodItemIndex);
 
-    quantity=foodItem.quantity!;
-    weight=foodItem.weight!;
-    calories=foodItem.calories!;
-    fats=foodItem.fats!;
-    proteins=foodItem.proteins!;
-    carbs=foodItem.carbs!;
-
+    quantity = foodItem.quantity;
+    weight = foodItem.weight;
+    calories = foodItem.calories;
+    fats = foodItem.fats;
+    proteins = foodItem.proteins;
+    carbs = foodItem.carbs;
 
     _quantityController = TextEditingController(text: '$quantity');
     _weightController = TextEditingController(text: '$weight');
+    chosenWeightUnit=foodItem.weightUnit==WeightUnit.grams?'g':'kg';
 
     initialized = true;
   }
@@ -106,11 +102,11 @@ class _FoodItemPageState extends State<FoodItemPage> {
                 ),
               ),
               onChanged: (val) {
-                if (val.isEmpty) return;
                 setState(() {
+                  if (val.isEmpty) val="0";
                   // TODO: macros and calories recalculation here
-                  fats = 2000;
-                  quantity=int.parse(val);
+                  fats += 2000;
+                  quantity = int.parse(val);
                 });
               },
             ),
@@ -119,7 +115,6 @@ class _FoodItemPageState extends State<FoodItemPage> {
       ),
     );
   }
-
 
   Widget addWeightRow(FoodItem foodItem) {
     return Container(
@@ -130,6 +125,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
           const Expanded(child: Text("Weight")),
           Container(
             width: 100,
+            margin: const EdgeInsets.only(right:5),
             child: TextField(
               textAlign: TextAlign.center,
               controller: _weightController,
@@ -142,12 +138,12 @@ class _FoodItemPageState extends State<FoodItemPage> {
                 ),
               ),
               onChanged: (val) {
-                if (val.isEmpty) return;
                 setState(() {
+                  if (val.isEmpty) val="0";
                   // TODO: macros and calories recalculation here
                   // TODO: handle choice g / kg
                   weight = int.parse(val);
-                  proteins = 1000; // TODO: remove this
+                  proteins += 1000; // TODO: remove this
                 });
 
                 // calories change
@@ -183,7 +179,6 @@ class _FoodItemPageState extends State<FoodItemPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('${foodItem.name}'),
@@ -213,8 +208,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               width: double.infinity,
               child: Row(
                 children: [
-                  buildRing(
-                      "${calories}\n kcal", "Calories", Colors.purple),
+                  buildRing("$calories\n kcal", "Calories", Colors.purple),
                   buildRing("${carbs}g", "Carbs", Colors.red),
                   buildRing("${proteins}g", "Protein", Colors.orange),
                   buildRing("${fats}g", "Fats", Colors.green),
@@ -236,12 +230,22 @@ class _FoodItemPageState extends State<FoodItemPage> {
               height: 70,
               width: double.infinity,
               padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(top: 50),
+              //margin: const EdgeInsets.only(top: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  history.modifyFoodItem(FoodItem(id:foodItem.id, name:foodItem.name,
-                  image:foodItem.image,proteins: proteins, carbs: carbs, fats: fats, weight: weight,
-                  calories:calories, quantity:quantity));
+                  history.modifyFoodItem(FoodItem(
+                      id: foodItem.id,
+                      name: foodItem.name,
+                      image: foodItem.image,
+                      proteins: proteins,
+                      carbs: carbs,
+                      fats: fats,
+                      weight: weight,
+                      calories: calories,
+                      quantity: quantity,
+                      weightUnit: chosenWeightUnit == 'g'
+                          ? WeightUnit.grams
+                          : WeightUnit.kilograms));
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
