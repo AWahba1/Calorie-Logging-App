@@ -1,4 +1,7 @@
+import 'package:client/widgets/camera_page.dart';
+import 'package:client/widgets/food_item_page.dart';
 import 'package:flutter/material.dart';
+import '../models/history_model.dart';
 
 class PredictionResults extends StatefulWidget {
   @override
@@ -6,42 +9,46 @@ class PredictionResults extends StatefulWidget {
 }
 
 class _PredictionResultsState extends State<PredictionResults> {
-  List<String> predictedItems = [
-    "Banana",
-    "Steak",
-    "Cheesecake",
-    "Apple Pie",
-    "French Fries"
+  List<FoodItem> predictedItems = [
+    FoodItem(
+      name: "Banana",
+    ),
+    FoodItem(
+      name: "Apple Pie",
+    ),
+    FoodItem(
+      name: "Steak",
+    ),
+    FoodItem(
+      name: "French Fries",
+    ),
+    FoodItem(
+      name: "Cheesecake",
+    )
   ];
+  String foodImage =
+      'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg';
 
-  //List<String>predictedItems=[];
+  // List<FoodItem>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //topOneItem=predictedItems[0];
-  }
-
-  Widget showTop1Prediction(
-      String foodItemName, VoidCallback onAddButtonPress) {
+  Widget showTop1Prediction(FoodItem foodItem, VoidCallback onEditPress,
+      VoidCallback onAddButtonPress) {
     return Card(
       //color: Colors.blue,
       elevation: 4.0,
       margin: const EdgeInsets.only(top: 13, bottom: 20),
       child: ListTile(
-        onTap: () {},
-        leading: const CircleAvatar(
-          backgroundImage: NetworkImage(
-              'https://images.healthshots.com/healthshots/en/uploads/2022/01/21143156/BANANAS-1600x900.jpg'),
+        onTap: onEditPress,
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(foodImage),
           radius: 30,
         ),
-        title: Text(foodItemName,
+        title: Text(foodItem.name!,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             )),
-        subtitle: const Text("2,500 kcal"),
+        subtitle: Text("${foodItem.calories} kcal"),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_sharp),
           onPressed: onAddButtonPress,
@@ -61,7 +68,7 @@ class _PredictionResultsState extends State<PredictionResults> {
             borderRadius: BorderRadius.circular(15.0),
           ),
         ),
-        child: Text(predictedItems[index]),
+        child: Text(predictedItems[index].name!),
       ),
     );
   }
@@ -72,12 +79,8 @@ class _PredictionResultsState extends State<PredictionResults> {
     });
   }
 
-  void onTopOnePress(int index) {
-    // open food item page
-  }
-
   void onTopOneAddButtonPress(int index) {
-    // send to backend & based on response show snackbar
+    // TODO: send to backend & based on response show corresponding snackbar
     const isRequestSuccessful = true;
     final snackBar = isRequestSuccessful
         ? buildSnackBar(
@@ -98,30 +101,39 @@ class _PredictionResultsState extends State<PredictionResults> {
   List<Widget> buildEmptyBottomSheet() {
     return [
       Container(
-          // width: double.infinity,
-          padding: const EdgeInsets.all(30),
-          // alignment: Alignment.center,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              Icon(Icons.image_search, size: 50),
-              SizedBox(height: 5),
-              Text("No food items found!"),
-              SizedBox(height: 20),
-              Text(
-                "Start adding by hovering your camera on the desired food item.",
-                textAlign: TextAlign.center,
-              )
-            ],
-          ))
+        // width: double.infinity,
+        padding: const EdgeInsets.all(30),
+        // alignment: Alignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            Icon(Icons.image_search, size: 50),
+            SizedBox(height: 5),
+            Text("No food items found!"),
+            SizedBox(height: 20),
+            Text(
+              "Start adding by hovering your camera on the desired food item and tapping the add button.",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      )
     ];
   }
 
   List<Widget> buildFullBottomSheet() {
     final topOneItem = predictedItems[currentItemIndex];
+    topOneItem.image = foodImage;
+    topOneItem.weight = 100;
+    // TODO: fetch macros & calories based on qty=1 & weight=100
     return [
-      showTop1Prediction(
-          topOneItem, () => onTopOneAddButtonPress(currentItemIndex)),
+      showTop1Prediction(topOneItem, () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => FoodItemPage(
+                  isCameraPageCaller: true,
+                  foodItem: topOneItem,
+                )));
+      }, () => onTopOneAddButtonPress(currentItemIndex)),
       const Text(
         "Consider also:",
         style: TextStyle(

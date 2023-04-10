@@ -5,21 +5,20 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import './prediction_results.dart';
 
-
-class TakePictureScreen extends StatefulWidget {
+class CameraPage extends StatefulWidget {
   final CameraDescription camera;
-  static const route='/add-food';
+  static const route = '/add-food';
 
-  const TakePictureScreen({
+  const CameraPage({
     super.key,
     required this.camera,
   });
 
   @override
-  _TakePictureScreenState createState() => _TakePictureScreenState();
+  _CameraPageState createState() => _CameraPageState();
 }
 
-class _TakePictureScreenState extends State<TakePictureScreen> {
+class _CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
@@ -52,11 +51,10 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
 
     return SafeArea(
       child: Scaffold(
-          extendBodyBehindAppBar: true,
-        appBar:AppBar(
-
-            backgroundColor: Colors.transparent,
-            elevation:0,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
         body: Stack(
           children: [
@@ -75,8 +73,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
               },
             ),
             Positioned(
-                bottom: mediaQuery.padding.bottom,
-                child: PredictionResults()),
+                bottom: mediaQuery.padding.bottom, child: PredictionResults()),
           ],
         ),
         // floatingActionButton: FloatingActionButton(

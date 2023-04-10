@@ -22,12 +22,13 @@ class JournalPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(TakePictureScreen.route);
+          Navigator.of(context).pushNamed(CameraPage.route);
         },
         tooltip: "Add new item",
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
       body: Stack(
         children: [
           Positioned(

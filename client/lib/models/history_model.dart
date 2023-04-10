@@ -2,15 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 
-enum WeightUnit{
-  grams, kilograms
-}
+enum WeightUnit { grams, kilograms }
 
 class FoodItem {
   int? id;
   String? image;
   String? name;
-  int weight; // in grams
+  int weight;
   WeightUnit weightUnit;
   int calories;
   int carbs; // grams
@@ -22,12 +20,12 @@ class FoodItem {
     this.id,
     this.image,
     this.name,
-    this.weight=0,
-    this.calories=0,
-    this.carbs=0,
-    this.fats=0,
-    this.proteins=0,
-    this.quantity=1,
+    this.weight = 0,
+    this.calories = 0,
+    this.carbs = 0,
+    this.fats = 0,
+    this.proteins = 0,
+    this.quantity = 1,
     this.weightUnit = WeightUnit.grams,
   });
 }
@@ -93,7 +91,6 @@ class HistoryModel with ChangeNotifier {
     //TODO: remove random values & fetch from backend
 
     //_foodItems = _fetchFoodItems();
-    print(_foodItems[0].weightUnit);
   }
 
   DateTime get currentDate => _currentDate;
@@ -133,8 +130,9 @@ class HistoryModel with ChangeNotifier {
     return _foodItems[index];
   }
 
-  void addFoodItem() {
+  void addFoodItem(FoodItem newItem) {
     // TODO: add food item backend
+    _foodItems.add(newItem);
     notifyListeners();
   }
 
@@ -142,16 +140,17 @@ class HistoryModel with ChangeNotifier {
     // TODO: remove food item backend
     _foodItems.removeWhere((foodItem) => foodItem.id == itemId);
     notifyListeners();
-
   }
 
-  void modifyFoodItem(FoodItem modifiedItem) {
+  void modifyOrAddFoodItem(FoodItem item) {
     int index =
-        foodItems.indexWhere((foodItem) => foodItem.id == modifiedItem.id);
+        foodItems.indexWhere((foodItem) => foodItem.id == item.id);
 
     if (index != -1) {
       // TODO: update element in database
-      foodItems[index] = modifiedItem;
+      foodItems[index] = item;
+    } else {
+      addFoodItem(item);
     }
     notifyListeners();
   }

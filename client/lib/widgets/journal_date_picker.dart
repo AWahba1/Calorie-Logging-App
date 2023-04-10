@@ -11,14 +11,13 @@ class JournalDatePicker extends StatelessWidget {
 
   //JournalDatePicker({required this.onCalendarPress});
 
-
-
   String get getCurrentDate {
     final now = DateTime.now();
     final currentDate = history.currentDate;
 
     final nowDate = DateTime(now.year, now.month, now.day);
-    final historyDate = DateTime(currentDate.year, currentDate.month, currentDate.day);
+    final historyDate =
+        DateTime(currentDate.year, currentDate.month, currentDate.day);
 
     final differenceDates = historyDate.difference(nowDate).inDays;
     switch (differenceDates) {
@@ -62,7 +61,7 @@ class JournalDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    history = Provider.of<HistoryModel>(context, listen:false);
+    history = Provider.of<HistoryModel>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
@@ -78,7 +77,7 @@ class JournalDatePicker extends StatelessWidget {
             child: ElevatedButton.icon(
               icon: const Icon(Icons.calendar_month),
               label: Text(getCurrentDate),
-              onPressed: ()=>onCalendarPress(context),
+              onPressed: () => onCalendarPress(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[300],
                 foregroundColor: Colors.black54,

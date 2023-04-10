@@ -8,6 +8,11 @@ class FoodItemPage extends StatefulWidget {
 
   static const route = '/food-item';
 
+  final bool isCameraPageCaller;
+  final FoodItem foodItem;
+  const FoodItemPage({required this.isCameraPageCaller, required this.foodItem});
+
+
   @override
   State<FoodItemPage> createState() => _FoodItemPageState();
 }
@@ -15,7 +20,6 @@ class FoodItemPage extends StatefulWidget {
 class _FoodItemPageState extends State<FoodItemPage> {
   late FoodItem foodItem;
   late HistoryModel history;
-  late int foodItemIndex;
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
   bool initialized = false;
@@ -28,6 +32,8 @@ class _FoodItemPageState extends State<FoodItemPage> {
   late int carbs;
   late int proteins;
 
+  late bool isCameraPageCaller;
+
   @override
   void initState() {
     super.initState();
@@ -38,10 +44,9 @@ class _FoodItemPageState extends State<FoodItemPage> {
     super.didChangeDependencies();
     if (initialized) return;
 
-    foodItemIndex = ModalRoute.of(context)?.settings.arguments as int;
+    foodItem = widget.foodItem;
 
     history = Provider.of<HistoryModel>(context, listen: false);
-    foodItem = history.getFoodItemByPosition(foodItemIndex);
 
     quantity = foodItem.quantity;
     weight = foodItem.weight;
@@ -52,7 +57,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
 
     _quantityController = TextEditingController(text: '$quantity');
     _weightController = TextEditingController(text: '$weight');
-    chosenWeightUnit=foodItem.weightUnit==WeightUnit.grams?'g':'kg';
+    chosenWeightUnit = foodItem.weightUnit == WeightUnit.grams ? 'g' : 'kg';
 
     initialized = true;
   }
@@ -103,7 +108,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               ),
               onChanged: (val) {
                 setState(() {
-                  if (val.isEmpty) val="0";
+                  if (val.isEmpty) val = "0";
                   // TODO: macros and calories recalculation here
                   fats += 2000;
                   quantity = int.parse(val);
@@ -125,7 +130,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
           const Expanded(child: Text("Weight")),
           Container(
             width: 100,
-            margin: const EdgeInsets.only(right:5),
+            margin: const EdgeInsets.only(right: 5),
             child: TextField(
               textAlign: TextAlign.center,
               controller: _weightController,
@@ -139,7 +144,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               ),
               onChanged: (val) {
                 setState(() {
-                  if (val.isEmpty) val="0";
+                  if (val.isEmpty) val = "0";
                   // TODO: macros and calories recalculation here
                   // TODO: handle choice g / kg
                   weight = int.parse(val);
@@ -183,13 +188,14 @@ class _FoodItemPageState extends State<FoodItemPage> {
       appBar: AppBar(
         title: Text('${foodItem.name}'),
         actions: [
-          IconButton(
-              icon: const Icon(Icons.delete),
-              tooltip: 'Delete item',
-              onPressed: () {
-                history.removeFoodItem(foodItem.id!);
-                Navigator.of(context).pop();
-              })
+          if (!widget.isCameraPageCaller)
+            IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: 'Delete item',
+                onPressed: () {
+                  history.removeFoodItem(foodItem.id!);
+                  Navigator.of(context).pop();
+                })
         ],
       ),
       body: SingleChildScrollView(
@@ -233,7 +239,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               //margin: const EdgeInsets.only(top: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  history.modifyFoodItem(FoodItem(
+                  history.modifyOrAddFoodItem(FoodItem(
                       id: foodItem.id,
                       name: foodItem.name,
                       image: foodItem.image,
@@ -253,7 +259,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text("Save Changes"),
+                child: Text(widget.isCameraPageCaller?"Add Item":"Save Changes"),
               ),
             )
           ],

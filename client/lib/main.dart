@@ -31,8 +31,7 @@ class App extends StatelessWidget {
         routes: {
           '/':(ctx)=> Home(),
           JournalPage.route:(ctx)=> JournalPage(),
-          TakePictureScreen.route: (ctx) => TakePictureScreen(camera: camera),
-          FoodItemPage.route: (ctx)=> FoodItemPage(),
+          CameraPage.route: (ctx) => CameraPage(camera: camera),
         },
       ),
     );
