@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './widgets/journal_page.dart';
 import './widgets/food_item_page.dart';
+import './widgets/signup_page.dart';
+import './widgets/login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,31 +29,14 @@ class App extends StatelessWidget {
       create: (_)=> HistoryModel(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute:JournalPage.route ,
+        initialRoute:SignUpPage.route,
         routes: {
-          '/':(ctx)=> Home(),
+          SignUpPage.route:(ctx)=> SignUpPage(),
+          LoginPage.route:(ctx)=> LoginPage(),
           JournalPage.route:(ctx)=> JournalPage(),
           CameraPage.route: (ctx) => CameraPage(camera: camera),
         },
       ),
     );
-  }
-}
-
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/add-food');
-        },
-        child: const Text("Click"));
   }
 }

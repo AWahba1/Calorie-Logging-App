@@ -90,8 +90,8 @@ class _PredictionResultsState extends State<PredictionResults> {
             'Added Successfully', Colors.green, const Duration(seconds: 1))
         : buildSnackBar('Error while adding food item! Please try again',
             Colors.red, const Duration(seconds: 1));
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
   }
 
   SnackBar buildSnackBar(String text, Color color, Duration duration) {
