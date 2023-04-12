@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import '../models/history_model.dart';
 
 class PredictionResults extends StatefulWidget {
+
+  final String? foodImage;
+  PredictionResults(this.foodImage);
+
   @override
   State<PredictionResults> createState() => _PredictionResultsState();
 }
@@ -27,8 +31,8 @@ class _PredictionResultsState extends State<PredictionResults> {
       name: "Cheesecake",
     )
   ];
-  String foodImage =
-      'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg';
+  // String foodImage =
+  //     'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg';
 
   // List<FoodItem>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
@@ -43,7 +47,7 @@ class _PredictionResultsState extends State<PredictionResults> {
       child: ListTile(
         onTap: onEditPress,
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(foodImage),
+          backgroundImage: NetworkImage(widget.foodImage!),
           radius: 30,
         ),
         title: Text(foodItem.name!,
@@ -127,7 +131,7 @@ class _PredictionResultsState extends State<PredictionResults> {
 
   List<Widget> buildFullBottomSheet() {
     final topOneItem = predictedItems[currentItemIndex];
-    topOneItem.image = foodImage;
+    topOneItem.image = widget.foodImage;
     topOneItem.weight = 100;
     // TODO: fetch macros & calories based on qty=1 & weight=100
     return [
@@ -193,7 +197,7 @@ class _PredictionResultsState extends State<PredictionResults> {
             ),
           ),
           const Divider(thickness: 0.5),
-          if (predictedItems.isEmpty)
+          if (widget.foodImage==null)
             ...buildEmptyBottomSheet()
           else
             ...buildFullBottomSheet()

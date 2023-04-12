@@ -37,7 +37,7 @@ class App extends StatelessWidget {
       create: (_)=> HistoryModel(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute:SignUpPage.route,
+        initialRoute:CameraPage.route,
         routes: {
           SignUpPage.route:(ctx)=> SignUpPage(),
           LoginPage.route:(ctx)=> LoginPage(),
