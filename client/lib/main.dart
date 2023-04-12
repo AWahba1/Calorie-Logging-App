@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:client/models/history_model.dart';
 import 'package:client/widgets/camera_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import './widgets/journal_page.dart';
 import './widgets/food_item_page.dart';
@@ -17,9 +18,13 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+  );
   final cameras = await availableCameras();
-
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
