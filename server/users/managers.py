@@ -3,15 +3,17 @@ from django.core.exceptions import ValidationError
 import re
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email=None, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
+        if not password:
+            raise ValueError('The Password field must be set')
 
         # Check if email is a valid email address
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         if not re.match(email_regex, email):
             raise ValidationError('Invalid email address')
-            
+
         # save user to database
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)

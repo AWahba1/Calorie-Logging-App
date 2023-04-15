@@ -1,8 +1,9 @@
+from datetime import timezone
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 
 
-class EmailBackend(ModelBackend):
+class CustomAuthBackend(ModelBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
         UserModel = get_user_model()
         try:
@@ -10,5 +11,6 @@ class EmailBackend(ModelBackend):
         except UserModel.DoesNotExist:
             return None
         if user.check_password(password):
+            user.last_login = timezone.now()
             return user
         return None
