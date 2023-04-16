@@ -1,4 +1,5 @@
 
+from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,39 +13,31 @@ from django.contrib.auth import authenticate
 
 @api_view(['GET'])
 def get_all_users(request):
+
     users = CustomUser.objects.all()
     serializer = CustomUserSerializer(users, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_user_by_id(request, id):
-    try:
-        user = CustomUser.objects.get(pk=id)
-    except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+
+    user=get_object_or_404(CustomUser, pk=id)  
     serializer = CustomUserSerializer(user, many=False)
     return Response(serializer.data)
 
 
 @api_view(['DELETE'])
 def delete_user(request, id):
-    try:
-        user = CustomUser.objects.get(pk=id)
-    except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    user=get_object_or_404(CustomUser, pk=id)
     user.delete()
-    return Response('User deleted')
+    return Response('User deleted', status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['PUT'])
 def update_user(request, id):
-    try:
-        user = CustomUser.objects.get(pk=id)
-    except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    user=get_object_or_404(CustomUser, pk=id)
     serializer = CustomUserSerializer(instance=user, data=request.data)
     if serializer.is_valid():
         try:
@@ -53,17 +46,17 @@ def update_user(request, id):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
 def sign_up(request):
+
     serializer = CustomUserSerializer(data=request.data)
     if serializer.is_valid():
         try:
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -72,6 +65,7 @@ def sign_up(request):
 
 @api_view(['POST'])
 def login(request):
+
     email = request.data['email']
     password = request.data['password']
     user = authenticate(request, email=email, password=password)
@@ -79,6 +73,6 @@ def login(request):
         serializer = CustomUserSerializer(instance=user)
         return Response(serializer.data)
     else:
-        return Response('Invalid credentials')
+        return Response('Invalid credentials', status=status.HTTP_401_UNAUTHORIZED)
 
 
