@@ -6,6 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+
 class NutritionxAPI:
     def __init__(self):
         self.base_url = 'https://trackapi.nutritionix.com/v2/search/instant'
@@ -40,10 +41,10 @@ class NutritionxAPI:
 
         food_item = FoodItem(
             name=food_name,
-            calories=food_nutrients["calories"],
-            protein=food_nutrients["protein"],
-            carbs=food_nutrients["carbs"],
-            fat=food_nutrients["fats"],
+            calories_per_gram=food_nutrients["calories"],
+            protein_per_gram=food_nutrients["protein"],
+            carbs_per_gram=food_nutrients["carbs"],
+            fats_per_gram=food_nutrients["fats"],
         )
         food_item.save()
 
@@ -51,11 +52,11 @@ class NutritionxAPI:
         nutrients = {}
         for nutrient in food_item_nutrients:
             if nutrient["attr_id"] == 203:
-                nutrients["protein"] = nutrient["value"]/food_item_weight
+                nutrients["protein"] = nutrient["value"] / food_item_weight
             elif nutrient["attr_id"] == 204:
-                nutrients["fat"] = nutrient["value"]/food_item_weight
+                nutrients["fat"] = nutrient["value"] / food_item_weight
             elif nutrient["attr_id"] == 205:
-                nutrients["carbs"] = nutrient["value"]/food_item_weight
+                nutrients["carbs"] = nutrient["value"] / food_item_weight
             elif nutrient["attr_id"] == 208:
-                nutrients["calories"] = nutrient["value"]/food_item_weight
+                nutrients["calories"] = nutrient["value"] / food_item_weight
         return nutrients

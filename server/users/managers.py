@@ -2,6 +2,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.core.exceptions import ValidationError
 import re
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email=None, password=None, **extra_fields):
         if not email:
