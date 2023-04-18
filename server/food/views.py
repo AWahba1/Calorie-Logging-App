@@ -25,7 +25,7 @@ class FoodItemList(APIView):
 
 class FoodItemDetail(APIView):
     def get_object(self, id):
-        return get_object_or_404(FoodItem,pk=id)
+        return get_object_or_404(FoodItem, pk=id)
 
     def get(self, request, id):
         food_item = self.get_object(id)

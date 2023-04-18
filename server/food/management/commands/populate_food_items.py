@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from food.nutritionx import NutritionxAPI
 
 from server.settings import BASE_DIR
+import cnn_model
 
 
 class Command(BaseCommand):
@@ -13,7 +14,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Read labels.txt
         labels_file_path = os.path.join(
-            BASE_DIR, 'cnn_model', 'food_classes.txt')
+            BASE_DIR, 'cnn_model', 'classifier','food_classes.txt')
+            
 
         with open(labels_file_path, 'r') as labels_file:
             labels = [label.strip() for label in labels_file.readlines()]
