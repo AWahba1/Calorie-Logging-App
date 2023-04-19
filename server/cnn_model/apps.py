@@ -12,4 +12,3 @@ class CnnModelConfig(AppConfig):
 
         CnnModelConfig.food_predictor = FoodPredictor()
         CnnModelConfig.food_predictor.load_model()
-

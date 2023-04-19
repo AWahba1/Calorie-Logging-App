@@ -30,13 +30,18 @@ class FoodPredictor:
             labels = [label.strip() for label in labels_file.readlines()]
         return labels
 
-    def open_image(self, image_url):
+    # Function to load image from URL or local path
+    def load_image(self, image, is_url):
         try:
-            response = requests.get(image_url)
-            img = Image.open(BytesIO(response.content))
+            img = None
+            if is_url:
+                response = requests.get(image)
+                img = Image.open(BytesIO(response.content))
+            else:
+                img = Image.open(image)
             return img
         except Exception as e:
-            raise Exception(f"Problem opening image from URL - {e}")
+            raise Exception(f"Problem loading image - {e}")
 
     def preprocess_image(self, food_image):
         try:
@@ -53,8 +58,8 @@ class FoodPredictor:
         except Exception as e:
             raise Exception(f"Problem preprocessing image - {e}")
 
-    def predict(self, image_url, n_top_items=5):
-        img = self.open_image(image_url)
+    def predict(self, image, n_top_items=5, is_url=False):
+        img = self.load_image(image, is_url)
         img_array = self.preprocess_image(img)
 
         predictions = self.model.predict(img_array)

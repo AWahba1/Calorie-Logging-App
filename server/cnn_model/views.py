@@ -14,6 +14,25 @@ class FoodPredictionView(views.APIView):
     image_serializer = ImageSerializer
 
     def post(self, request):
+        if 'image_url' in request.data:
+            return self.predict_food_from_url(request)
+        elif 'image' in request.data:
+            return self.predict_food_from_image(request)
+        else:
+            return Response({'error': 'image_url or image is required'}, status=400)
+
+    def get_list_of_predictions(self, top_classes):
+        predictions = []
+        for food_class in top_classes:
+            food_item = FoodItem.objects.get(name=food_class)
+            predictions.append(food_item)
+
+        # Serializing predictions
+        prediction_serializer = self.prediction_serializer(
+            predictions, many=True)
+        return prediction_serializer.data
+
+    def predict_food_from_url(self, request):
         try:
             image_serializer = self.image_serializer(data=request.data)
             if not image_serializer.is_valid():
@@ -21,17 +40,23 @@ class FoodPredictionView(views.APIView):
 
             # Instantiate classifier and predict
             image_url = image_serializer.validated_data['image_url']
-            top_classes = CnnModelConfig.food_predictor.predict(image_url)
+            top_classes = CnnModelConfig.food_predictor.predict(
+                image_url, is_url=True)
 
-            # # For each predicted food name, a food item object is retrieved from the database and a prediction object is created
-            predictions = []
-            for food_class in top_classes:
-                food_item = FoodItem.objects.get(name=food_class)
-                predictions.append(food_item)
+            # For each predicted food name, a food item object is retrieved from the database and a prediction object is created
+            predictions_list = self.get_list_of_predictions(top_classes)
+            return Response(predictions_list)
 
-            # # Serializing predictions
-            prediction_serializer = self.prediction_serializer(
-                predictions, many=True)
-            return Response(prediction_serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+    def predict_food_from_image(self, request):
+        try:
+            image_file = request.data['image']
+            top_classes = CnnModelConfig.food_predictor.predict(image_file)
+
+            # For each predicted food name, a food item object is retrieved from the database and a prediction object is created
+            predictions_list = self.get_list_of_predictions(top_classes)
+            return Response(predictions_list)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
