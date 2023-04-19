@@ -21,6 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
-    path('food-items', include('food.urls')),
-    path('predict', include('cnn_model.urls')),
+    path('food-items/', include('food.urls')),
+    path('predict/', include('cnn_model.urls')),
 ]
