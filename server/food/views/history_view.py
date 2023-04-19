@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-from ..models import FoodItem, UserHistory
+from ..models import UserHistory
 from ..serializers import UserHistorySerializer
 
 
@@ -36,3 +36,27 @@ class UserHistoryListView(APIView):
 
         except IntegrityError as e:
             return Response({'error': f"Error while logging food item - {e}"}, status=400)
+
+
+class UserHistoryDetailView(APIView):
+    
+        def get_object(self, id):
+            return get_object_or_404(UserHistory, pk=id)
+    
+        def get(self, request, history_id):
+            history = self.get_object(history_id)
+            serializer = UserHistorySerializer(history)
+            return Response(serializer.data)
+    
+        def patch(self, request, history_id):
+            history = self.get_object(history_id)
+            serializer = UserHistorySerializer(history, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+        def delete(self, request, history_id):
+            history = self.get_object(history_id)
+            history.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
