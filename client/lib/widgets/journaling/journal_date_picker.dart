@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/history_model.dart';
+import '../../models/history_model.dart';
 
 class JournalDatePicker extends StatelessWidget {
   //const JournalDatePicker({Key? key}) : super(key: key);

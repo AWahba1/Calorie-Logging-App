@@ -1,8 +1,8 @@
-import 'package:client/widgets/camera_page.dart';
-import 'package:client/widgets/food_item_page.dart';
+import 'package:client/widgets/predicting_food/camera_page.dart';
+import 'package:client/widgets/food_item_details/food_item_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/history_model.dart';
+import '../../models/history_model.dart';
 
 class PredictionResults extends StatefulWidget {
 

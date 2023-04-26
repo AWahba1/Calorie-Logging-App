@@ -1,16 +1,18 @@
 import 'package:camera/camera.dart';
 import 'package:client/models/history_model.dart';
-import 'package:client/widgets/camera_page.dart';
+import 'package:client/widgets/predicting_food/camera_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import './widgets/journal_page.dart';
-import './widgets/food_item_page.dart';
-import './widgets/signup_page.dart';
-import './widgets/login_page.dart';
+import 'widgets/journaling/journal_page.dart';
+import 'widgets/food_item_details/food_item_page.dart';
+import 'widgets/authentication//signup_page.dart';
+import 'widgets/authentication/login_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +30,8 @@ Future<void> main() async {
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
+  await dotenv.load();
+
   runApp(App(firstCamera));
 }
 
@@ -42,7 +46,7 @@ class App extends StatelessWidget {
       create: (_)=> HistoryModel(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute:CameraPage.route,
+        initialRoute:LoginPage.route,
         routes: {
           SignUpPage.route:(ctx)=> SignUpPage(),
           LoginPage.route:(ctx)=> LoginPage(),

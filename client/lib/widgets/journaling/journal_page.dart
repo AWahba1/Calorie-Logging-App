@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/history_model.dart';
-import './journal_chart.dart';
-import './journal_date_picker.dart';
-import './journal_food_item.dart';
+import '../../models/history_model.dart';
+import 'journal_chart.dart';
+import 'journal_date_picker.dart';
+import 'journal_food_item.dart';
 import 'package:provider/provider.dart';
 
-import 'camera_page.dart';
+import '../predicting_food/camera_page.dart';
 
 class JournalPage extends StatelessWidget {
   //const JournalPage({Key? key}) : super(key: key);
@@ -42,6 +42,7 @@ class JournalPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Journal"),
+        automaticallyImplyLeading: false,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

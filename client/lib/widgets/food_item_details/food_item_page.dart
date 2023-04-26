@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../models/history_model.dart';
+import '../../models/history_model.dart';
 
 class FoodItemPage extends StatefulWidget {
   //const FoodItemPage({Key? key}) : super(key: key);

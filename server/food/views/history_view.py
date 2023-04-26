@@ -17,7 +17,7 @@ class UserHistoryListView(APIView):
         if not date:  # Date is required
             return Response({'error': 'Date is required'}, status=400)
 
-        history = UserHistory.objects.filter(user=user_id, date=date)
+        history = UserHistory.objects.filter(user=user_id, date=date).order_by("-id")
         serializer = UserHistorySerializer(history, many=True)
         return Response(serializer.data)
 

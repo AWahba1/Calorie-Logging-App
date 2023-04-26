@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import './prediction_results.dart';
-import '../services/firebase_storage.dart';
+import 'prediction_results.dart';
+import '../../services/firebase_storage.dart';
 
 class CameraPage extends StatefulWidget {
   final CameraDescription camera;

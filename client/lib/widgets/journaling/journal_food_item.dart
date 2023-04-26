@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/history_model.dart';
-import './food_item_page.dart';
+import '../../models/history_model.dart';
+import '../food_item_details/food_item_page.dart';
 
 class JournalFoodItem extends StatelessWidget {
   //const JournalFoodItem({Key? key}) : super(key: key);
