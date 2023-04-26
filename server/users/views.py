@@ -2,7 +2,8 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
+# from rest_framework.response import Response
+from unified_response.response import UnifiedHttpResponse
 from rest_framework import status
 
 
@@ -17,7 +18,7 @@ def get_all_users(request):
 
     users = CustomUser.objects.all()
     serializer = CustomUserSerializer(users, many=True)
-    return Response(serializer.data)
+    return UnifiedHttpResponse(serializer.data)
 
 
 @api_view(['GET'])
@@ -25,7 +26,7 @@ def get_user_by_id(request, id):
 
     user = get_object_or_404(CustomUser, pk=id)
     serializer = CustomUserSerializer(user, many=False)
-    return Response(serializer.data)
+    return UnifiedHttpResponse(serializer.data)
 
 
 @api_view(['DELETE'])
@@ -33,7 +34,7 @@ def delete_user(request, id):
 
     user = get_object_or_404(CustomUser, pk=id)
     user.delete()
-    return Response('User deleted', status=status.HTTP_204_NO_CONTENT)
+    return UnifiedHttpResponse()
 
 
 @api_view(['PUT'])
@@ -44,11 +45,10 @@ def update_user(request, id):
     if serializer.is_valid():
         try:
             serializer.save()
-            return Response(serializer.data)
+            return UnifiedHttpResponse(serializer.data)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
+    return UnifiedHttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -58,11 +58,10 @@ def sign_up(request):
     if serializer.is_valid():
         try:
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return UnifiedHttpResponse(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
+    return UnifiedHttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -73,6 +72,6 @@ def login(request):
     user = authenticate(request, email=email, password=password)
     if user is not None:
         serializer = CustomUserSerializer(instance=user)
-        return Response(serializer.data)
+        return UnifiedHttpResponse(serializer.data)
     else:
-        return Response('Invalid credentials', status=status.HTTP_401_UNAUTHORIZED)
+        return UnifiedHttpResponse(message="Please check your username and password and try again!", status=status.HTTP_401_UNAUTHORIZED)

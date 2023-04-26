@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'unified_response',
     'users',
     'cnn_model',
     'food',
@@ -144,3 +145,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.CustomAuthBackend',
 ]
+
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'middleware.exception_handler.custom_exception_handler'
+}
