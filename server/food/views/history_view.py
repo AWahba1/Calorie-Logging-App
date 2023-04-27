@@ -7,7 +7,7 @@ from rest_framework import status
 
 from ..models import UserHistory
 from ..serializers import UserHistorySerializer
-from unified_response.response import UnifiedHttpResponse
+from utils.unified_http_response.response import UnifiedHttpResponse
 
 
 class UserHistoryListView(APIView):

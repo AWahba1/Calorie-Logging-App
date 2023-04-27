@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'unified_response',
+    'utils',
     'users',
     'cnn_model',
     'food',

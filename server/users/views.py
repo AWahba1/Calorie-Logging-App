@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import api_view
 # from rest_framework.response import Response
-from unified_response.response import UnifiedHttpResponse
+from utils.unified_http_response.response import UnifiedHttpResponse
 from rest_framework import status
 
 
@@ -48,7 +48,7 @@ def update_user(request, id):
             return UnifiedHttpResponse(serializer.data)
         except Exception as e:
             return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
-    return UnifiedHttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -61,7 +61,7 @@ def sign_up(request):
             return UnifiedHttpResponse(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
-    return UnifiedHttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

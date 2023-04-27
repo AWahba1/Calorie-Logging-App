@@ -7,7 +7,7 @@ from .serializers import ImageSerializer
 from .classifier.food_classifer import FoodPredictor
 from food.serializers import FoodItemSerializer
 from .apps import CnnModelConfig
-from unified_response.response import UnifiedHttpResponse
+from utils.unified_http_response.response import UnifiedHttpResponse
 
 
 class FoodPredictionView(views.APIView):
