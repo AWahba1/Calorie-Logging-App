@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 class CustomUserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(validators=[UniqueValidator(
-        queryset=CustomUser.objects.all(), message="This email address is already registered.")])
+        queryset=CustomUser.objects.all(), message="This email address is already registered. \nPlease choose another one.")])
 
     class Meta:
         model = CustomUser

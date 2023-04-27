@@ -1,6 +1,6 @@
 from django.http import Http404
 from rest_framework import status
-from unified_http_response.response import UnifiedHttpResponse
+from utils.unified_http_response.response import UnifiedHttpResponse
 
 
 from rest_framework.views import exception_handler

@@ -19,6 +19,7 @@ class UserHistorySerializer(serializers.ModelSerializer):
 
     date = serializers.DateField(required=True, write_only=True)
     quantity = serializers.IntegerField(default=1)
+    imageURL=serializers.URLField(required=True)
 
 
     def to_representation(self, instance):

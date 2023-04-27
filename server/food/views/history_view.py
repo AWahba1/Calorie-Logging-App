@@ -56,7 +56,7 @@ class UserHistoryDetailView(APIView):
         if serializer.is_valid():
             serializer.save()
             return UnifiedHttpResponse(serializer.data)
-        return UnifiedHttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, history_id):
         history = self.get_object(history_id)

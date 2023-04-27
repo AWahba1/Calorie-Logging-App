@@ -74,4 +74,4 @@ def login(request):
         serializer = CustomUserSerializer(instance=user)
         return UnifiedHttpResponse(serializer.data)
     else:
-        return UnifiedHttpResponse(message="Please check your username and password and try again!", status=status.HTTP_401_UNAUTHORIZED)
+        return UnifiedHttpResponse(message="Please check your email and password and try again!", status=status.HTTP_401_UNAUTHORIZED)

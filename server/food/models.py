@@ -2,6 +2,7 @@ from django.db import models
 from users.models import CustomUser
 import datetime
 
+
 class FoodItem(models.Model):
     name = models.CharField(max_length=255)
     calories_per_gram = models.FloatField()
@@ -19,6 +20,7 @@ class UserHistory(models.Model):
     date = models.DateField(default=datetime.date.today)
     weight = models.DecimalField(max_digits=7, decimal_places=2)
     quantity = models.PositiveIntegerField()
+    imageURL = models.URLField(null=True)
 
     def __str__(self):
         return f"{self.user} - {self.food_item} - {self.date}"
