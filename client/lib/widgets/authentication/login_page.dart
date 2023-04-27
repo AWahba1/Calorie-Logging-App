@@ -9,6 +9,7 @@ import 'package:client/widgets/journaling/journal_page.dart';
 import 'package:flutter/material.dart';
 
 import 'common/email_field.dart';
+import 'common/error_message.dart';
 
 import 'package:client/services/api/auth_service.dart';
 
@@ -25,7 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool isLoading = false; // triggered when submitting form
+  bool _isLoading = false; // triggered when submitting form
+  String _errorMessage = "";
 
   void onSubmittingForm() async {
     final isValid = _formKey.currentState!.validate();
@@ -35,18 +37,22 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState!.save();
 
     setState(() {
-      isLoading = true;
+      _isLoading = true;
+      //_errorMessage = "";
     });
 
-    bool isSuccessful = await AuthService.loginUser(
+    final response = await AuthService.loginUser(
         _emailController.text, _passwordController.text);
 
-    print(isSuccessful);
     setState(() {
-      isLoading = false;
+      _isLoading = false;
     });
-    if (isSuccessful) {
+    if (response.isSuccess) {
       Navigator.of(context).pushReplacementNamed(JournalPage.route);
+    } else if (response.status == 400 || response.status == 401) {
+      setState(() {
+        _errorMessage = response.message;
+      });
     } else {
       const snackBar = SnackBar(
         content: Text(
@@ -95,8 +101,9 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         }),
                     const SizedBox(height: 20.0),
+                    if (_errorMessage.isNotEmpty) ErrorMessage(_errorMessage),
                     SubmitFormButton(
-                        isLoading: isLoading,
+                        isLoading: _isLoading,
                         onFormSubmit: onSubmittingForm,
                         text: 'Log in'),
                     const SizedBox(height: 20.0),

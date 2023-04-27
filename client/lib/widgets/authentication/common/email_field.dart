@@ -7,6 +7,7 @@ class EmailField extends StatefulWidget {
   final TextEditingController emailController;
 
   const EmailField({required this.emailController});
+
   @override
   State<EmailField> createState() => _EmailFieldState();
 }

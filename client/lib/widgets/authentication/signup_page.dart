@@ -7,7 +7,7 @@ import 'package:client/widgets/authentication/login_page.dart';
 import 'package:flutter/material.dart';
 
 import 'common/email_field.dart';
-
+import 'common/error_message.dart';
 import 'package:client/services/api/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -26,7 +26,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  bool isLoading = false; // triggered when submitting form
+  bool _isLoading = false; // triggered when submitting form
+  String _errorMessage = "";
 
   void onSubmittingForm() async {
     final isValid = _formKey.currentState!.validate();
@@ -36,18 +37,23 @@ class _SignUpPageState extends State<SignUpPage> {
     _formKey.currentState!.save();
 
     setState(() {
-      isLoading = true;
+      _isLoading = true;
+      //_errorMessage="";
     });
 
-    bool isSuccessful = await AuthService.registerUser(
-        _nameController.text, _emailController.text, _passwordController.text);
+    final response = await AuthService.registerUser(_nameController.text,
+        _emailController.text.toLowerCase(), _passwordController.text);
 
-    print(isSuccessful);
+    //print(isSuccessful);
     setState(() {
-      isLoading = false;
+      _isLoading = false;
     });
-    if (isSuccessful) {
+    if (response.isSuccess) {
       Navigator.of(context).pushReplacementNamed(LoginPage.route);
+    } else if (response.status == 400) {
+      setState(() {
+        _errorMessage = response.message;
+      });
     } else {
       const snackBar = SnackBar(
         content: Text(
@@ -132,9 +138,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         }
                         return null;
                       }),
-                  const SizedBox(height: 40.0),
+                  const SizedBox(height: 20.0),
+                  if (_errorMessage.isNotEmpty) ErrorMessage(_errorMessage),
                   SubmitFormButton(
-                      isLoading: isLoading,
+                      isLoading: _isLoading,
                       onFormSubmit: onSubmittingForm,
                       text: 'Sign Up'),
                   const SizedBox(height: 20.0),
