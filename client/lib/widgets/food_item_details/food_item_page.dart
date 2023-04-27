@@ -9,8 +9,8 @@ class FoodItemPage extends StatefulWidget {
   static const route = '/food-item';
 
   final bool isCameraPageCaller;
-  final FoodItem foodItem;
-  const FoodItemPage({required this.isCameraPageCaller, required this.foodItem});
+  final HistoryItem historyItem;
+  const FoodItemPage({required this.isCameraPageCaller, required this.historyItem});
 
 
   @override
@@ -18,19 +18,19 @@ class FoodItemPage extends StatefulWidget {
 }
 
 class _FoodItemPageState extends State<FoodItemPage> {
-  late FoodItem foodItem;
-  late HistoryModel history;
+  late HistoryItem historyItem;
+  late UserHistoryModel history;
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
   bool initialized = false;
   late String chosenWeightUnit; // 'g' or 'kg'
 
   late int quantity;
-  late int weight;
+  late double weight;
   late int calories;
-  late int fats;
-  late int carbs;
-  late int proteins;
+  late double fats;
+  late double carbs;
+  late double proteins;
 
   late bool isCameraPageCaller;
 
@@ -44,20 +44,21 @@ class _FoodItemPageState extends State<FoodItemPage> {
     super.didChangeDependencies();
     if (initialized) return;
 
-    foodItem = widget.foodItem;
+    historyItem = widget.historyItem;
 
-    history = Provider.of<HistoryModel>(context, listen: false);
+    history = Provider.of<UserHistoryModel>(context, listen: false);
 
-    quantity = foodItem.quantity;
-    weight = foodItem.weight;
-    calories = foodItem.calories;
-    fats = foodItem.fats;
-    proteins = foodItem.proteins;
-    carbs = foodItem.carbs;
+    quantity = historyItem.quantity;
+    weight = historyItem.weight;
+    calories = historyItem.calories;
+    fats = historyItem.fats;
+    proteins = historyItem.protein;
+    carbs = historyItem.carbs;
 
     _quantityController = TextEditingController(text: '$quantity');
     _weightController = TextEditingController(text: '$weight');
-    chosenWeightUnit = foodItem.weightUnit == WeightUnit.grams ? 'g' : 'kg';
+    //chosenWeightUnit = historyItem.weightUnit == WeightUnit.grams ? 'g' : 'kg';
+    chosenWeightUnit='g';
 
     initialized = true;
   }
@@ -86,7 +87,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
     );
   }
 
-  Widget addQuantityRow(FoodItem foodItem) {
+  Widget addQuantityRow(HistoryItem historyItem) {
     return Container(
       padding: const EdgeInsets.all(10),
       height: 70,
@@ -121,7 +122,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
     );
   }
 
-  Widget addWeightRow(FoodItem foodItem) {
+  Widget addWeightRow(HistoryItem historyItem) {
     return Container(
       padding: const EdgeInsets.all(10),
       height: 80,
@@ -147,7 +148,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
                   if (val.isEmpty) val = "0";
                   // TODO: macros and calories recalculation here
                   // TODO: handle choice g / kg
-                  weight = int.parse(val);
+                  weight = double.parse(val);
                   proteins += 1000; // TODO: remove this
                 });
 
@@ -186,14 +187,14 @@ class _FoodItemPageState extends State<FoodItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${foodItem.name}'),
+        title: Text(historyItem.foodItemDetails.name),
         actions: [
           if (!widget.isCameraPageCaller)
             IconButton(
                 icon: const Icon(Icons.delete),
                 tooltip: 'Delete item',
                 onPressed: () {
-                  history.removeFoodItem(foodItem.id!);
+                  history.removeHistoryItem(historyItem.id!);
                   Navigator.of(context).pop();
                 })
         ],
@@ -206,7 +207,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 15),
               child: Image.network(
-                foodItem.image!,
+                historyItem.imageURL!,
                 fit: BoxFit.cover,
               ),
             ),
@@ -225,12 +226,12 @@ class _FoodItemPageState extends State<FoodItemPage> {
               thickness: 1,
               height: 25,
             ),
-            addQuantityRow(foodItem),
+            addQuantityRow(historyItem),
             const Divider(
               thickness: 1,
               height: 25,
             ),
-            addWeightRow(foodItem),
+            addWeightRow(historyItem),
             Container(
               // alignment: Alignment.center,
               height: 70,
@@ -239,19 +240,19 @@ class _FoodItemPageState extends State<FoodItemPage> {
               //margin: const EdgeInsets.only(top: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  history.modifyOrAddFoodItem(FoodItem(
-                      id: foodItem.id,
-                      name: foodItem.name,
-                      image: foodItem.image,
-                      proteins: proteins,
-                      carbs: carbs,
-                      fats: fats,
-                      weight: weight,
-                      calories: calories,
-                      quantity: quantity,
-                      weightUnit: chosenWeightUnit == 'g'
-                          ? WeightUnit.grams
-                          : WeightUnit.kilograms));
+                  // history.modifyOrAddHistoryItem(FoodItem(
+                  //     id: historyItem.id,
+                  //     name: historyItem.name,
+                  //     image: historyItem.image,
+                  //     proteins: proteins,
+                  //     carbs: carbs,
+                  //     fats: fats,
+                  //     weight: weight,
+                  //     calories: calories,
+                  //     quantity: quantity,
+                  //     weightUnit: chosenWeightUnit == 'g'
+                  //         ? WeightUnit.grams
+                  //         : WeightUnit.kilograms));
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(

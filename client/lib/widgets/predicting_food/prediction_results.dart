@@ -14,31 +14,32 @@ class PredictionResults extends StatefulWidget {
 }
 
 class _PredictionResultsState extends State<PredictionResults> {
-  List<FoodItem> predictedItems = [
-    FoodItem(
-      name: "Banana",
-    ),
-    FoodItem(
-      name: "Apple Pie",
-    ),
-    FoodItem(
-      name: "Steak",
-    ),
-    FoodItem(
-      name: "French Fries",
-    ),
-    FoodItem(
-      name: "Cheesecake",
-    )
-  ];
+  // List<FoodItem> predictedItems = [
+  //   FoodItem(
+  //     name: "Banana",
+  //   ),
+  //   FoodItem(
+  //     name: "Apple Pie",
+  //   ),
+  //   FoodItem(
+  //     name: "Steak",
+  //   ),
+  //   FoodItem(
+  //     name: "French Fries",
+  //   ),
+  //   FoodItem(
+  //     name: "Cheesecake",
+  //   )
+  // ];
+  List<HistoryItem>predictedItems=[];
   // String foodImage =
   //     'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg';
 
   // List<FoodItem>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
-  late HistoryModel history;
+  late UserHistoryModel history;
 
-  Widget showTop1Prediction(FoodItem foodItem, VoidCallback onEditPress,
+  Widget showTop1Prediction(HistoryItem historyItem, VoidCallback onEditPress,
       VoidCallback onAddButtonPress) {
     return Card(
       //color: Colors.blue,
@@ -50,11 +51,11 @@ class _PredictionResultsState extends State<PredictionResults> {
           backgroundImage: NetworkImage(widget.foodImage!),
           radius: 30,
         ),
-        title: Text(foodItem.name!,
+        title: Text(historyItem.foodItemDetails.name!,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             )),
-        subtitle: Text("${foodItem.calories} kcal"),
+        subtitle: Text("${historyItem.calories} kcal"),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_sharp),
           onPressed: onAddButtonPress,
@@ -74,7 +75,7 @@ class _PredictionResultsState extends State<PredictionResults> {
             borderRadius: BorderRadius.circular(15.0),
           ),
         ),
-        child: Text(predictedItems[index].name!),
+        child: Text(predictedItems[index].foodItemDetails.name!),
       ),
     );
   }
@@ -85,9 +86,9 @@ class _PredictionResultsState extends State<PredictionResults> {
     });
   }
 
-  void onTopOneAddButtonPress(FoodItem topOneItem) {
+  void onTopOneAddButtonPress(HistoryItem topOneItem) {
     // TODO: send to backend & based on response show corresponding snackbar
-    history.addFoodItem(topOneItem);
+    history.addHistoryItem(topOneItem);
     const isRequestSuccessful = true;
     final snackBar = isRequestSuccessful
         ? buildSnackBar(
@@ -131,8 +132,8 @@ class _PredictionResultsState extends State<PredictionResults> {
 
   List<Widget> buildFullBottomSheet() {
     final topOneItem = predictedItems[currentItemIndex];
-    topOneItem.image = widget.foodImage;
-    topOneItem.weight = 100;
+    topOneItem.imageURL = widget.foodImage!;
+    topOneItem.weight = 100.0;
     // TODO: fetch macros & calories based on qty=1 & weight=100
     return [
       showTop1Prediction(topOneItem, () {
@@ -140,7 +141,7 @@ class _PredictionResultsState extends State<PredictionResults> {
           MaterialPageRoute(
             builder: (context) => FoodItemPage(
               isCameraPageCaller: true,
-              foodItem: topOneItem,
+              historyItem: topOneItem,
             ),
           ),
         );
@@ -172,7 +173,7 @@ class _PredictionResultsState extends State<PredictionResults> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    history = Provider.of<HistoryModel>(context, listen: false);
+    history = Provider.of<UserHistoryModel>(context, listen: false);
 
     return Container(
       width: mediaQuery.size.width,

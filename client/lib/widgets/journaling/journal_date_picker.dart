@@ -6,10 +6,7 @@ import '../../models/history_model.dart';
 class JournalDatePicker extends StatelessWidget {
   //const JournalDatePicker({Key? key}) : super(key: key);
 
-  //VoidCallback onCalendarPress;
-  late HistoryModel history;
-
-  //JournalDatePicker({required this.onCalendarPress});
+  late UserHistoryModel history;
 
   String get getCurrentDate {
     final now = DateTime.now();
@@ -61,7 +58,7 @@ class JournalDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    history = Provider.of<HistoryModel>(context, listen: false);
+    history = Provider.of<UserHistoryModel>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),

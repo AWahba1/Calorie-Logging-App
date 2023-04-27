@@ -5,9 +5,9 @@ class JournalChart extends StatelessWidget {
   //const JournalChart({Key? key}) : super(key: key);
 
   final int totalCalories;
-  final int totalFats; // in grams
-  final int totalProteins; // in grams
-  final int totalCarbs; // in grams
+  final double totalFats; // in grams
+  final double totalProteins; // in grams
+  final double totalCarbs; // in grams
 
   const JournalChart(
       {required this.totalCalories,
@@ -32,9 +32,9 @@ class JournalChart extends StatelessWidget {
             const SizedBox(height: 10),
             PieChart(
               dataMap: {
-                'Fats': totalFats * 1.0,
-                'Protein': totalProteins * 1.0,
-                'Carbohydrates': totalCarbs * 1.0
+                'Fats': totalFats,
+                'Protein': totalProteins,
+                'Carbohydrates': totalCarbs
               },
               chartRadius: 160,
               chartValuesOptions: const ChartValuesOptions(

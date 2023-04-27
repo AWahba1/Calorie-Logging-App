@@ -1,174 +1,180 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:client/services/api/history_service.dart';
 
 enum WeightUnit { grams, kilograms }
 
-class FoodItem {
-  int? id;
-  String? image;
-  String? name;
-  int weight;
-  WeightUnit weightUnit;
-  int calories;
-  int carbs; // grams
-  int fats; // grams
-  int proteins; // grams
+class HistoryItem {
+  final int id;
+  String? imageURL;
   int quantity;
+  double weight;
+  final FoodItemDetails foodItemDetails;
 
-  FoodItem({
-    this.id,
-    this.image,
-    this.name,
-    this.weight = 0,
-    this.calories = 0,
-    this.carbs = 0,
-    this.fats = 0,
-    this.proteins = 0,
-    this.quantity = 1,
-    this.weightUnit = WeightUnit.grams,
-  });
+  HistoryItem(
+      {required this.id,
+      required this.imageURL,
+      required this.quantity,
+      required this.weight,
+      required this.foodItemDetails});
+
+  factory HistoryItem.fromJson(Map<String, dynamic> json) {
+    return HistoryItem(
+      id: json['id'],
+      imageURL: json['imageURL'],
+      quantity: json['quantity'],
+      weight: json['weight'],
+      foodItemDetails: FoodItemDetails.fromJson(json['food_item']),
+    );
+  }
+
+  int get calories => (quantity * weight * foodItemDetails.calories_per_gram).round();
+
+  double get fats => (quantity * weight * foodItemDetails.calories_per_gram);
+
+  double get protein => quantity * weight * foodItemDetails.protein_per_gram;
+
+  double get carbs => quantity * weight * foodItemDetails.carbs_per_gram;
 }
 
-class HistoryModel with ChangeNotifier {
+class FoodItemDetails {
+  final int id;
+  final String name;
+  //WeightUnit weightUnit;
+  final double calories_per_gram;
+  final double protein_per_gram; // grams
+  final double carbs_per_gram; // grams
+  final double fats_per_gram; // grams
+
+  FoodItemDetails(
+      {required this.id,
+      //required this.image,
+      required this.name,
+      required this.calories_per_gram,
+      required this.carbs_per_gram,
+      required this.fats_per_gram,
+      required this.protein_per_gram});
+
+  factory FoodItemDetails.fromJson(Map<String, dynamic> json) {
+    return FoodItemDetails(
+      id: json['id'],
+      name: json['name'],
+      calories_per_gram: json['calories_per_gram'],
+      protein_per_gram: json['protein_per_gram'],
+      carbs_per_gram: json['carbs_per_gram'],
+      fats_per_gram: json['fats_per_gram'],
+    );
+  }
+}
+
+class UserHistoryModel with ChangeNotifier {
   DateTime _currentDate;
 
-  // List<FoodItem> _foodItems = [];
+  List<HistoryItem>? _historyItems = [];
 
-  final List<FoodItem> _foodItems = [
-    FoodItem(
-      name: "Banana",
-      image:
-          'https://www.allrecipes.com/thmb/hFs2oTo2hWflhFy7ORU3Sv3EHNo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Bananas-by-Mike-DieterMeredith-03866d9ab12a40d38eb452b344e6a9ea.jpg',
-    ),
-    FoodItem(
-      name: "Apple Pie",
-      image:
-          'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg',
-    ),
-    FoodItem(
-      name: "Steak",
-      image:
-          'https://www.seriouseats.com/thmb/WzQz05gt5witRGeOYKTcTqfe1gs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/butter-basted-pan-seared-steaks-recipe-hero-06-03b1131c58524be2bd6c9851a2fbdbc3.jpg',
-    ),
-    FoodItem(
-      name: "French Fries",
-      image:
-          'https://images.immediate.co.uk/production/volatile/sites/30/2021/03/French-fries-b9e3e0c.jpg?resize=768,574',
-    ),
-    FoodItem(
-      name: "Cheesecake",
-      image:
-          'https://www.jocooks.com/wp-content/uploads/2018/11/cheesecake-1-22.jpg',
-    ),
-    FoodItem(
-      name: "Apple",
-      image:
-          'https://healthjade.com/wp-content/uploads/2017/10/apple-fruit.jpg',
-    ),
-    FoodItem(
-      name: "Chocolate Cake",
-      image:
-          'https://recipes.timesofindia.com/thumb/53096885.cms?width=1200&height=900',
-    ),
-    FoodItem(
-      name: "Club Sandwich",
-      image: 'https://static.toiimg.com/photo/83740315.cms',
-    ),
-    FoodItem(
-      name: "Hot Dog",
-      image:
-          'https://static.onecms.io/wp-content/uploads/sites/43/2022/09/09/268494_Basic-Air-Fryer-Hot-Dogs_Buckwheat-Queen_SERP_5844319_original-4x3-1.jpg',
-    ),
-    FoodItem(
-        name: "Pizza",
-        image:
-            'https://cdn.apartmenttherapy.info/image/upload/f_jpg,q_auto:eco,c_fill,g_auto,w_1500,ar_4:3/k%2FPhoto%2FRecipe%20Ramp%20Up%2F2021-07-Chicken-Alfredo-Pizza%2FChicken-Alfredo-Pizza-KitchnKitchn2970-1_01'),
-  ];
-
-  HistoryModel({DateTime? currentDate})
-      : _currentDate = currentDate ?? DateTime.now() {
-    _assignRandomValues(_foodItems);
-    //TODO: remove random values & fetch from backend
-
-    //_foodItems = _fetchFoodItems();
-  }
+  UserHistoryModel({DateTime? currentDate})
+      : _currentDate = currentDate ?? DateTime.now();
 
   DateTime get currentDate => _currentDate;
 
-  List<FoodItem> get foodItems => _foodItems;
+  List<HistoryItem>? get historyItems => _historyItems;
 
   int get totalCalories =>
-      _foodItems.fold(0, (total, element) => total + element.calories);
+      _historyItems?.fold(
+          0,
+          (total, element) =>
+              total! +
+              (element.quantity *
+                  element.weight *
+                  element.foodItemDetails.calories_per_gram).round()) ??
+      0;
 
-  int get totalCarbs =>
-      _foodItems.fold(0, (total, element) => total + element.carbs);
+  double get totalCarbs =>
+      _historyItems?.fold(
+          0,
+          (total, element) =>
+              total! +
+              (element.quantity *
+                  element.weight *
+                  element.foodItemDetails.carbs_per_gram)) ??
+      0;
 
-  int get totalProteins =>
-      _foodItems.fold(0, (total, element) => total + element.proteins);
+  double get totalProteins =>
+      _historyItems?.fold(
+          0,
+          (total, element) =>
+              total! +
+              (element.quantity *
+                  element.weight *
+                  element.foodItemDetails.protein_per_gram)) ??
+      0;
 
-  int get totalFats =>
-      _foodItems.fold(0, (total, element) => total + element.fats);
+  double get totalFats =>
+      _historyItems?.fold(
+          0,
+          (total, element) =>
+              total! +
+              (element.quantity *
+                  element.weight *
+                  element.foodItemDetails.fats_per_gram)) ??
+      0;
 
-  void setDate(DateTime newDate) {
+  Future<void> setDate(DateTime newDate) async{
     _currentDate = newDate;
-    //TODO: remove random values & fetch from backend
-    //_foodItems = _fetchFoodItem();
-    _assignRandomValues(_foodItems);
+    //TODO: fetch from backend
+    final response = await HistoryService.fetchAllHistoryItems(_currentDate);
+    _historyItems=response.data;
     notifyListeners();
   }
 
-  List<FoodItem> _fetchFoodItems() {
+  Future<List<HistoryItem>?> fetchAndSetHistoryList() async {
     // TODO: fetch from backend based on current date
-    return [];
+    final response = await HistoryService.fetchAllHistoryItems(_currentDate);
+    print(response.data);
+    print(response.status);
+    print(response.message);
+    _historyItems = response.data;
+    notifyListeners();
+    return _historyItems;
   }
 
-  FoodItem getFoodItemById(int itemId) {
-    return _foodItems.firstWhere((foodItem) => foodItem.id == itemId);
+  HistoryItem getHistoryItemById(int itemId) {
+    return _historyItems!.firstWhere((foodItem) => foodItem.id == itemId);
   }
 
-  FoodItem getFoodItemByPosition(int index) {
-    return _foodItems[index];
+  HistoryItem getHistoryItemByPosition(int index) {
+    return _historyItems![index];
   }
 
-  void addFoodItem(FoodItem newItem) {
+  void addHistoryItem(HistoryItem newItem) async {
+    if (historyItems == null) return;
+
     // TODO: add food item backend
-
-    _foodItems.add(newItem);
-
+    _historyItems!.add(newItem);
     notifyListeners();
   }
 
-  void removeFoodItem(int itemId) {
+  void removeHistoryItem(int itemId) async {
+    if (historyItems == null) return;
+
     // TODO: remove food item backend
-    _foodItems.removeWhere((foodItem) => foodItem.id == itemId);
+    _historyItems!.removeWhere((historyItem) => historyItem.id == itemId);
     notifyListeners();
   }
 
-  void modifyOrAddFoodItem(FoodItem item) {
-    int index = foodItems.indexWhere((foodItem) => foodItem.id == item.id);
+  void modifyOrAddHistoryItem(HistoryItem item) async {
+    if (historyItems == null) return;
+
+    int index =
+        historyItems!.indexWhere((historyItem) => historyItem.id == item.id);
 
     if (index != -1) {
       // TODO: update element in database
-      foodItems[index] = item;
+      historyItems![index] = item;
     } else {
-      addFoodItem(item);
+      addHistoryItem(item);
     }
     notifyListeners();
-  }
-
-  void _assignRandomValues(List<FoodItem> foodItems) {
-    // TODO: remove random values method
-
-    Random rand = Random();
-    int index = 0;
-    for (var food in foodItems) {
-      food.weight = rand.nextInt(200);
-      food.calories = rand.nextInt(2000);
-      food.carbs = rand.nextInt(100);
-      food.fats = rand.nextInt(100);
-      food.proteins = rand.nextInt(100);
-      food.id = index++;
-    }
   }
 }

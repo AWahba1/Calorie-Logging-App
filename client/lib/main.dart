@@ -43,10 +43,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_)=> HistoryModel(),
+      create: (_)=> UserHistoryModel(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute:LoginPage.route,
+        initialRoute:JournalPage.route,
         routes: {
           SignUpPage.route:(ctx)=> SignUpPage(),
           LoginPage.route:(ctx)=> LoginPage(),

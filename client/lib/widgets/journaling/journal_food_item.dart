@@ -6,14 +6,14 @@ import '../food_item_details/food_item_page.dart';
 class JournalFoodItem extends StatelessWidget {
   //const JournalFoodItem({Key? key}) : super(key: key);
 
-  final int foodItemIndex;
+  final int historyItemIndex;
 
-  JournalFoodItem(this.foodItemIndex);
+  JournalFoodItem(this.historyItemIndex);
 
   @override
   Widget build(BuildContext context) {
-    final foodItem =
-        Provider.of<HistoryModel>(context).getFoodItemByPosition(foodItemIndex);
+    final historyItem = Provider.of<UserHistoryModel>(context)
+        .getHistoryItemByPosition(historyItemIndex);
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -22,24 +22,28 @@ class JournalFoodItem extends StatelessWidget {
           elevation: 2,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(foodItem.image!),
+              backgroundImage: NetworkImage(historyItem.imageURL!),
               radius: 30,
             ),
             title: Text(
-              foodItem.name!,
+              historyItem.foodItemDetails.name,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
               ),
             ),
-            subtitle: Text(
-                '${foodItem.weight} ${foodItem.weightUnit == WeightUnit.grams ? 'g' : 'kg'}'),
+            // subtitle: Text(
+            //     '${historyItem.weight} ${historyItem.weightUnit == WeightUnit.grams ? 'g' : 'kg'}'),
+            subtitle: Text('${historyItem.weight} g'),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text('${foodItem.calories}'), const Text('kcal')],
+              children: [Text('${historyItem.calories}'), const Text('kcal')],
             ),
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => FoodItemPage(isCameraPageCaller: false,foodItem: foodItem,)));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => FoodItemPage(
+                        isCameraPageCaller: false,
+                        historyItem: historyItem,
+                      )));
             },
           )),
     );
