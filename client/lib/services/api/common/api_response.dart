@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'api_helper.dart';
 
 class ApiResponse<T> {
@@ -48,7 +46,6 @@ class ApiResponseList<T> {
   factory ApiResponseList.fromJson(Map<String, dynamic> json, int statusCode,
       T Function(Map<String, dynamic> json)? fromJson) {
     List<T>? data = <T>[];
-    print(json['data'].runtimeType);
     final responseData = json['data'];
     if (responseData != null && responseData.length > 0) {
       data =

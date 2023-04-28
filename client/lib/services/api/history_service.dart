@@ -1,12 +1,10 @@
 import 'package:client/models/history_model.dart';
-
 import 'common/api_response.dart';
 import 'common/api_consumer.dart';
-import 'package:client/models/history_model.dart';
 
 class HistoryService {
   static const url = "/food-items/history";
-  static int userId = 1;
+  static int userId = 1; // TODO: remove when authentication is done
 
   static Future<ApiResponseList<HistoryItem>> fetchAllHistoryItems(
       DateTime dateTime) async {
@@ -29,8 +27,17 @@ class HistoryService {
     return response;
   }
 
-// static Future<ApiResponse> updateHistoryItem()
-// {
-//   // final response=await ApiConsumer.
-// }
+  static Future<ApiResponse> updateHistoryItem(
+      HistoryItem newHistoryItem) async {
+    final response = await ApiConsumer.update(
+        '$url/${newHistoryItem.id}',
+        {
+          'weight': newHistoryItem.weight,
+          'weight_unit':
+              WeightUnitExtension.convertToString(newHistoryItem.weightUnit),
+          'quantity': newHistoryItem.quantity
+        },
+        null);
+    return response;
+  }
 }

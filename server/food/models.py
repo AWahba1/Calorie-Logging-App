@@ -21,6 +21,8 @@ class UserHistory(models.Model):
     weight = models.DecimalField(max_digits=7, decimal_places=2)
     quantity = models.PositiveIntegerField()
     imageURL = models.URLField(null=True)
+    weight_unit = models.CharField(max_length=2, default='g')
+
 
     def __str__(self):
         return f"{self.user} - {self.food_item} - {self.date}"

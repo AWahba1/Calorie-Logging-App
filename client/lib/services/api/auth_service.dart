@@ -6,14 +6,14 @@ class AuthService {
 
   static Future<ApiResponse> registerUser(
       String name, String email, String password) async {
-    final response = await ApiConsumer.post(
-        '$url/signup', {'name': name, 'email': email, 'password': password},null);
+    final response = await ApiConsumer.post('$url/signup',
+        {'name': name, 'email': email, 'password': password}, null);
     return response;
   }
 
   static Future<ApiResponse> loginUser(String email, String password) async {
     final response = await ApiConsumer.post(
-        '$url/login', {'email': email, 'password': password},null);
+        '$url/login', {'email': email, 'password': password}, null);
     return response;
   }
 }

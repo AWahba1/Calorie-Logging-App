@@ -39,4 +39,12 @@ class ApiConsumer {
     return ApiResponse.fromJson(
         jsonDecode(response.body), response.statusCode, null);
   }
+
+  static Future<ApiResponse<Tout>> update<Tin, Tout>(String path, Tin data,
+      Tout Function(Map<String, dynamic> json)? fromJson) async {
+    final response = await http.patch(Uri.parse(baseUrl + path),
+        body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
+    return ApiResponse.fromJson(
+        jsonDecode(response.body), response.statusCode, fromJson);
+  }
 }

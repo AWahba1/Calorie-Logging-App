@@ -3,13 +3,36 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:client/services/api/history_service.dart';
 
-enum WeightUnit { grams, kilograms }
+enum WeightUnit { g, kg }
+
+extension WeightUnitExtension on WeightUnit {
+  static WeightUnit? fromString(String shortString) {
+    switch (shortString) {
+      case 'g':
+        return WeightUnit.g;
+      case 'kg':
+        return WeightUnit.kg;
+      default:
+        return null;
+    }
+  }
+
+  static String convertToString(WeightUnit weightUnit) {
+    switch (weightUnit) {
+      case WeightUnit.kg:
+        return 'kg';
+      default:
+        return 'g';
+    }
+  }
+}
 
 class HistoryItem {
   final int id;
   String? imageURL;
   int quantity;
   double weight;
+  WeightUnit weightUnit;
   final FoodItemDetails foodItemDetails;
 
   HistoryItem(
@@ -17,6 +40,7 @@ class HistoryItem {
       required this.imageURL,
       required this.quantity,
       required this.weight,
+      this.weightUnit = WeightUnit.g,
       required this.foodItemDetails});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
@@ -25,45 +49,72 @@ class HistoryItem {
       imageURL: json['imageURL'],
       quantity: json['quantity'],
       weight: json['weight'],
+      weightUnit:
+          WeightUnitExtension.fromString(json['weight_unit']) ?? WeightUnit.g,
       foodItemDetails: FoodItemDetails.fromJson(json['food_item']),
     );
   }
 
-  int get calories => (quantity * weight * foodItemDetails.calories_per_gram).round();
+  // deep cloning a history item object
+  factory HistoryItem.clone(HistoryItem copyFromItem) {
+    return HistoryItem(
+        id: copyFromItem.id,
+        imageURL: copyFromItem.imageURL,
+        quantity: copyFromItem.quantity,
+        weight: copyFromItem.weight,
+        weightUnit: copyFromItem.weightUnit,
+        foodItemDetails: copyFromItem.foodItemDetails);
+  }
 
-  double get fats => (quantity * weight * foodItemDetails.calories_per_gram);
+  int get calories => (quantity *
+          weight *
+          (weightUnit == WeightUnit.kg ? 1000 : 1) *
+          foodItemDetails.caloriesPerGram)
+      .round();
 
-  double get protein => quantity * weight * foodItemDetails.protein_per_gram;
+  // macros returned in grams
+  double get fats => (quantity *
+      weight *
+      (weightUnit == WeightUnit.kg ? 1000 : 1) *
+      foodItemDetails.caloriesPerGram);
 
-  double get carbs => quantity * weight * foodItemDetails.carbs_per_gram;
+  double get protein =>
+      quantity *
+      weight *
+      (weightUnit == WeightUnit.kg ? 1000 : 1) *
+      foodItemDetails.proteinPerGram;
+
+  double get carbs =>
+      quantity *
+      weight *
+      (weightUnit == WeightUnit.kg ? 1000 : 1) *
+      foodItemDetails.carbsPerGram;
 }
 
 class FoodItemDetails {
   final int id;
   final String name;
-  //WeightUnit weightUnit;
-  final double calories_per_gram;
-  final double protein_per_gram; // grams
-  final double carbs_per_gram; // grams
-  final double fats_per_gram; // grams
+  final double caloriesPerGram;
+  final double proteinPerGram;
+  final double carbsPerGram;
+  final double fatsPerGram;
 
   FoodItemDetails(
       {required this.id,
-      //required this.image,
       required this.name,
-      required this.calories_per_gram,
-      required this.carbs_per_gram,
-      required this.fats_per_gram,
-      required this.protein_per_gram});
+      required this.caloriesPerGram,
+      required this.carbsPerGram,
+      required this.fatsPerGram,
+      required this.proteinPerGram});
 
   factory FoodItemDetails.fromJson(Map<String, dynamic> json) {
     return FoodItemDetails(
       id: json['id'],
       name: json['name'],
-      calories_per_gram: json['calories_per_gram'],
-      protein_per_gram: json['protein_per_gram'],
-      carbs_per_gram: json['carbs_per_gram'],
-      fats_per_gram: json['fats_per_gram'],
+      caloriesPerGram: json['calories_per_gram'],
+      proteinPerGram: json['protein_per_gram'],
+      carbsPerGram: json['carbs_per_gram'],
+      fatsPerGram: json['fats_per_gram'],
     );
   }
 }
@@ -86,8 +137,10 @@ class UserHistoryModel with ChangeNotifier {
           (total, element) =>
               total! +
               (element.quantity *
-                  element.weight *
-                  element.foodItemDetails.calories_per_gram).round()) ??
+                      element.weight *
+                      (element.weightUnit == WeightUnit.kg ? 1000 : 1) *
+                      element.foodItemDetails.caloriesPerGram)
+                  .round()) ??
       0;
 
   double get totalCarbs =>
@@ -97,7 +150,8 @@ class UserHistoryModel with ChangeNotifier {
               total! +
               (element.quantity *
                   element.weight *
-                  element.foodItemDetails.carbs_per_gram)) ??
+                  (element.weightUnit == WeightUnit.kg ? 1000 : 1) *
+                  element.foodItemDetails.carbsPerGram)) ??
       0;
 
   double get totalProteins =>
@@ -107,7 +161,8 @@ class UserHistoryModel with ChangeNotifier {
               total! +
               (element.quantity *
                   element.weight *
-                  element.foodItemDetails.protein_per_gram)) ??
+                  (element.weightUnit == WeightUnit.kg ? 1000 : 1) *
+                  element.foodItemDetails.proteinPerGram)) ??
       0;
 
   double get totalFats =>
@@ -117,30 +172,26 @@ class UserHistoryModel with ChangeNotifier {
               total! +
               (element.quantity *
                   element.weight *
-                  element.foodItemDetails.fats_per_gram)) ??
+                  (element.weightUnit == WeightUnit.kg ? 1000 : 1) *
+                  element.foodItemDetails.fatsPerGram)) ??
       0;
 
-  Future<void> setDate(DateTime newDate) async{
+  Future<void> setDate(DateTime newDate) async {
     _currentDate = newDate;
-    //TODO: fetch from backend
     final response = await HistoryService.fetchAllHistoryItems(_currentDate);
-    _historyItems=response.data;
+    _historyItems = response.data;
     notifyListeners();
   }
 
   Future<List<HistoryItem>?> fetchAndSetHistoryList() async {
-    // TODO: fetch from backend based on current date
     final response = await HistoryService.fetchAllHistoryItems(_currentDate);
-    print(response.data);
-    print(response.status);
-    print(response.message);
     _historyItems = response.data;
     notifyListeners();
     return _historyItems;
   }
 
   HistoryItem getHistoryItemById(int itemId) {
-    return _historyItems!.firstWhere((foodItem) => foodItem.id == itemId);
+    return _historyItems!.firstWhere((historyItem) => historyItem.id == itemId);
   }
 
   HistoryItem getHistoryItemByPosition(int index) {
@@ -155,26 +206,56 @@ class UserHistoryModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeHistoryItem(int itemId) async {
-    if (historyItems == null) return;
+  Future<bool> removeHistoryItem(int itemId) async {
+    if (historyItems == null) return false;
 
-    // TODO: remove food item backend
-    _historyItems!.removeWhere((historyItem) => historyItem.id == itemId);
-    notifyListeners();
+    try {
+      final response = await HistoryService.deleteHistoryItem(itemId);
+      if (response.isSuccess) {
+        _historyItems!.removeWhere((historyItem) => historyItem.id == itemId);
+        notifyListeners();
+      }
+      return response.isSuccess;
+    } catch (exception) {
+      return false;
+    }
   }
 
-  void modifyOrAddHistoryItem(HistoryItem item) async {
-    if (historyItems == null) return;
+  Future<bool> modifyHistoryItem(
+      HistoryItem newHistoryItem, int itemIndex) async {
+    if (historyItems == null || itemIndex >= historyItems!.length) return false;
+    final oldHistoryItem = getHistoryItemByPosition(itemIndex);
 
-    int index =
-        historyItems!.indexWhere((historyItem) => historyItem.id == item.id);
-
-    if (index != -1) {
-      // TODO: update element in database
-      historyItems![index] = item;
-    } else {
-      addHistoryItem(item);
+    // all fields are identical, no need to send a request to the backend
+    if (oldHistoryItem.quantity == newHistoryItem.quantity &&
+        oldHistoryItem.weightUnit == newHistoryItem.weightUnit &&
+        oldHistoryItem.weight == newHistoryItem.weight) {
+      return true;
     }
-    notifyListeners();
+
+    final response = await HistoryService.updateHistoryItem(newHistoryItem);
+    if (response.isSuccess) {
+      // update in memory if successful
+      historyItems![itemIndex] = HistoryItem.clone(newHistoryItem);
+      notifyListeners();
+    }
+    return response.isSuccess;
+  }
+
+  Future<bool> modifyOrAddHistoryItem(HistoryItem item) async {
+    if (historyItems == null) return false;
+
+    try {
+      int index =
+          historyItems!.indexWhere((historyItem) => historyItem.id == item.id);
+      if (index != -1) {
+        return await modifyHistoryItem(item, index);
+      } else {
+        //addHistoryItem(item);
+        return true;
+      }
+    } catch (exception) {
+      return false;
+    }
   }
 }

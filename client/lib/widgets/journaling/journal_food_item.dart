@@ -31,9 +31,8 @@ class JournalFoodItem extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            // subtitle: Text(
-            //     '${historyItem.weight} ${historyItem.weightUnit == WeightUnit.grams ? 'g' : 'kg'}'),
-            subtitle: Text('${historyItem.weight} g'),
+            subtitle: Text(
+                '${historyItem.weight} ${historyItem.weightUnit == WeightUnit.g ? 'g' : 'kg'}'),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Text('${historyItem.calories}'), const Text('kcal')],
