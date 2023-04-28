@@ -1,3 +1,7 @@
+import 'package:client/widgets/food_item_details/add_save_button.dart';
+import 'package:client/widgets/food_item_details/quantity_field_row.dart';
+import 'package:client/widgets/food_item_details/ring.dart';
+import 'package:client/widgets/food_item_details/weight_field_row.dart';
 import 'package:client/widgets/util_views/error_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,26 +28,14 @@ class _FoodItemPageState extends State<FoodItemPage> {
   late TextEditingController _weightController;
   bool initialized = false;
   late String chosenWeightUnit; // 'g' or 'kg'
-
   late bool isCameraPageCaller;
 
   bool _isLoading = false;
-  String _previousText = '';
+  String _previousWeightText = '';
 
   @override
   void initState() {
     super.initState();
-  }
-
-  void _onWeightValueChanged() {
-    final newText = _weightController.text;
-    if (!RegExp(r'^(?:\d{1,5}(\.\d{0,2})?)?$').hasMatch(newText)) {
-      setState(() {
-        _weightController.text = _previousText;
-      });
-    } else {
-      _previousText = newText;
-    }
   }
 
   @override
@@ -59,129 +51,19 @@ class _FoodItemPageState extends State<FoodItemPage> {
     _weightController = TextEditingController(text: '${historyItem.weight}');
     chosenWeightUnit = historyItem.weightUnit == WeightUnit.g ? 'g' : 'kg';
     _weightController.addListener(_onWeightValueChanged);
+
     initialized = true;
   }
 
-  Widget buildRing(String innerText, String label, Color color) {
-    return Expanded(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 5),
-            child: CircleAvatar(
-              radius: 35,
-              backgroundColor: color,
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                child: FittedBox(
-                  child: Text(
-                    innerText,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Text(label)
-        ],
-      ),
-    );
-  }
-
-  Widget addQuantityRow(HistoryItem historyItem) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      height: 70,
-      child: Row(
-        children: [
-          const Expanded(child: Text("Quantity")),
-          Container(
-            width: 100,
-            child: TextField(
-              textAlign: TextAlign.center,
-              controller: _quantityController,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(4)
-              ],
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: false),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              onChanged: (val) {
-                setState(() {
-                  //TODO: macros recalculation
-                  if (val.isEmpty) val = "0";
-                  historyItem.quantity = int.parse(val);
-                });
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget addWeightRow(HistoryItem historyItem) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      height: 80,
-      child: Row(
-        children: [
-          const Expanded(child: Text("Weight")),
-          Container(
-            width: 100,
-            margin: const EdgeInsets.only(right: 5),
-            child: TextField(
-              textAlign: TextAlign.center,
-              controller: _weightController,
-              // inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d{1,5}(\.\d{0,2})?$'))],
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              onChanged: (val) {
-                setState(() {
-                  if (val.isEmpty) val = "0";
-                  historyItem.weight = double.parse(val);
-                });
-              },
-            ),
-          ),
-          Container(
-            width: 70,
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              alignment: Alignment.center,
-              value: chosenWeightUnit,
-              onChanged: (newValue) {
-                setState(() {
-                  historyItem.weightUnit =
-                      WeightUnitExtension.fromString(newValue!) ?? WeightUnit.g;
-                });
-              },
-              items: ['g', 'kg']
-                  .map((item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: Text(item),
-                      ))
-                  .toList(),
-            ),
-          )
-        ],
-      ),
-    );
+  void _onWeightValueChanged() {
+    final newText = _weightController.text;
+    if (!RegExp(r'^(?:\d{1,5}(\.\d{0,2})?)?$').hasMatch(newText)) {
+      setState(() {
+        _weightController.text = _previousWeightText;
+      });
+    } else {
+      _previousWeightText = newText;
+    }
   }
 
   void onDelete() async {
@@ -193,6 +75,21 @@ class _FoodItemPageState extends State<FoodItemPage> {
       _isLoading = false;
     });
 
+    if (isSuccess) {
+      Navigator.of(context).pop();
+    } else {
+      showErrorAlertDialog(context);
+    }
+  }
+
+  void onAddSaveButtonPress() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final isSuccess = await history.modifyOrAddHistoryItem(historyItem);
+    setState(() {
+      _isLoading = false;
+    });
     if (isSuccess) {
       Navigator.of(context).pop();
     } else {
@@ -231,14 +128,25 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     width: double.infinity,
                     child: Row(
                       children: [
-                        buildRing("${historyItem.calories}\n kcal", "Calories",
-                            Colors.purple),
-                        buildRing("${historyItem.carbs.toStringAsFixed(1)}.g",
-                            "Carbs", Colors.red),
-                        buildRing("${historyItem.protein.toStringAsFixed(1)}g",
-                            "Protein", Colors.orange),
-                        buildRing("${historyItem.fats.toStringAsFixed(1)}g",
-                            "Fats", Colors.green),
+                        Ring(
+                            innerText: "${historyItem.calories}\n kcal",
+                            label: "Calories",
+                            color: Colors.purple),
+                        Ring(
+                            innerText:
+                                "${historyItem.carbs.toStringAsFixed(1)}.g",
+                            label: "Carbs",
+                            color: Colors.red),
+                        Ring(
+                            innerText:
+                                "${historyItem.protein.toStringAsFixed(1)}.g",
+                            label: "Protein",
+                            color: Colors.orange),
+                        Ring(
+                            innerText:
+                                "${historyItem.fats.toStringAsFixed(1)}.g",
+                            label: "Fats",
+                            color: Colors.green),
                       ],
                     ),
                   ),
@@ -246,47 +154,42 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     thickness: 1,
                     height: 25,
                   ),
-                  addQuantityRow(historyItem),
+                  QuantityFieldRow(
+                    _quantityController,
+                    historyItem,
+                    (val) {
+                      setState(() {
+                        //TODO: macros recalculation
+                        if (val.isEmpty) val = "0";
+                        historyItem.quantity = int.parse(val);
+                      });
+                    },
+                  ),
                   const Divider(
                     thickness: 1,
                     height: 25,
                   ),
-                  addWeightRow(historyItem),
-                  Container(
-                    // alignment: Alignment.center,
-                    height: 70,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    child: ElevatedButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () async {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              final isSuccess = await history
-                                  .modifyOrAddHistoryItem(historyItem);
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              if (isSuccess) {
-                                Navigator.of(context).pop();
-                              } else {
-                                showErrorAlertDialog(context);
-                              }
-                            },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : Text(widget.isCameraPageCaller
-                              ? "Add Item"
-                              : "Save Changes"),
-                    ),
-                  )
+                  WeightFieldRow(_weightController, historyItem,
+                      onTextFieldChange: (val) {
+                        setState(() {
+                          if (val.isEmpty) val = "0";
+                          historyItem.weight = double.parse(val);
+                        });
+                      },
+                      chosenWeightUnit: chosenWeightUnit,
+                      onWeightUnitChange: (newValue) {
+                        setState(() {
+                          historyItem.weightUnit =
+                              WeightUnitExtension.fromString(newValue!) ??
+                                  WeightUnit.g;
+                        });
+                      }),
+                  AddSaveButton(
+                      isLoading: _isLoading,
+                      buttonText: widget.isCameraPageCaller
+                          ? "Add Item"
+                          : "Save Changes",
+                      onButtonPress: _isLoading ? null : onAddSaveButtonPress)
                 ],
               ),
             ),
