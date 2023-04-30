@@ -12,6 +12,6 @@ def custom_exception_handler(exc, context):
         response = UnifiedHttpResponse(
             status=status.HTTP_404_NOT_FOUND, message='Not found')
     else:
-        response = UnifiedHttpResponse(message=str(
+        response = UnifiedHttpResponse(message="An error has occured" if str(exc) == "" else str(
             exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return response

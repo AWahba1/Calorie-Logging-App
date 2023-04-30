@@ -1,17 +1,18 @@
 
 
 from rest_framework import views
+from cnn_model.prediction_result import PredictionResult
 # from rest_framework.response import Response
 from food.models import FoodItem
-from .serializers import ImageSerializer
+from .serializers import ImageSerializer, PredictionResultSerialier
 from .classifier.food_classifer import FoodPredictor
-from food.serializers import FoodItemSerializer
+
 from .apps import CnnModelConfig
 from utils.unified_http_response.response import UnifiedHttpResponse
 
 
 class FoodPredictionView(views.APIView):
-    prediction_serializer = FoodItemSerializer
+    prediction_serializer = PredictionResultSerialier
     image_serializer = ImageSerializer
 
     def post(self, request):
@@ -25,8 +26,10 @@ class FoodPredictionView(views.APIView):
     def get_list_of_predictions(self, top_classes):
         predictions = []
         for food_class in top_classes:
-            food_item = FoodItem.objects.get(name=food_class)
-            predictions.append(food_item)
+            food_item_details = FoodItem.objects.get(name=food_class)
+            # default weight of 50 grams is used for now
+            predictions.append(PredictionResult(
+                weight=50, food_item_details=food_item_details))
 
         # Serializing predictions
         prediction_serializer = self.prediction_serializer(

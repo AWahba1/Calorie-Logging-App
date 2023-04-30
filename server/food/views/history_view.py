@@ -18,7 +18,7 @@ class UserHistoryListView(APIView):
             return UnifiedHttpResponse(message='Date is required', status=400)
 
         history = UserHistory.objects.filter(
-            user=user_id, date=date).order_by("-id")
+            user=user_id, date=date)
         serializer = UserHistorySerializer(history, many=True)
         return UnifiedHttpResponse(serializer.data)
 
