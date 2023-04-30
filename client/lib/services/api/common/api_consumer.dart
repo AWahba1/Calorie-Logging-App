@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import './api_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -46,5 +48,26 @@ class ApiConsumer {
         body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
     return ApiResponse.fromJson(
         jsonDecode(response.body), response.statusCode, fromJson);
+  }
+
+  static Future<ApiResponseList<T>> uploadSingleFile<T>(
+      String path,
+      String fieldName,
+      File file,
+      T Function(Map<String, dynamic> json)? fromJson) async {
+    var stream = http.ByteStream(Stream.castFrom(file.openRead()));
+    var length = await file.length();
+
+    var uri = Uri.parse(baseUrl + path);
+    var request = http.MultipartRequest('POST', uri);
+    var multipartFile = http.MultipartFile(fieldName, stream, length,
+        filename: file.path.split('/').last);
+    request.files.add(multipartFile);
+
+    final response = await request.send();
+    String responseBodyString =
+        await response.stream.transform(utf8.decoder).join();
+    return ApiResponseList.fromJson(
+        jsonDecode(responseBodyString), response.statusCode, fromJson);
   }
 }

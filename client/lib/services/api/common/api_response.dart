@@ -20,8 +20,9 @@ class ApiResponse<T> {
       */
     final responseData = json['data'];
     T? data;
+    print(responseData);
     if (responseData != null && fromJson != null) {
-      data = responseData.fromJson();
+      data = fromJson(responseData);
     }
     return ApiResponse(
         message: ApiHelper.formatMessage(json['message']),

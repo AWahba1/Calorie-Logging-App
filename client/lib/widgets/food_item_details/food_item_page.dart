@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:client/widgets/food_item_details/add_save_button.dart';
 import 'package:client/widgets/food_item_details/quantity_field_row.dart';
 import 'package:client/widgets/food_item_details/ring.dart';
 import 'package:client/widgets/food_item_details/weight_field_row.dart';
 import 'package:client/widgets/util_views/error_alert_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../models/history_model.dart';
+import '../../models/history_item.dart';
+import '../../models/user_history_model.dart';
 
 class FoodItemPage extends StatefulWidget {
   static const route = '/food-item';
@@ -86,7 +88,9 @@ class _FoodItemPageState extends State<FoodItemPage> {
     setState(() {
       _isLoading = true;
     });
-    final isSuccess = await history.modifyOrAddHistoryItem(historyItem);
+    final isSuccess = widget.isCameraPageCaller
+        ? await history.addHistoryItem(historyItem)
+        : await history.modifyHistoryItem(historyItem);
     setState(() {
       _isLoading = false;
     });
@@ -119,10 +123,13 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     height: 250,
                     width: double.infinity,
                     margin: const EdgeInsets.only(bottom: 15),
-                    child: Image.network(
-                      historyItem.imageURL!,
-                      fit: BoxFit.cover,
-                    ),
+                    child: widget.isCameraPageCaller
+                        ? Image.file(File(historyItem.imagePath!),
+                            fit: BoxFit.cover)
+                        : Image.network(
+                            historyItem.imagePath!,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   Container(
                     width: double.infinity,

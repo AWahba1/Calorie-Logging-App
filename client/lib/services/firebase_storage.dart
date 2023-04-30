@@ -3,8 +3,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
 class FirebaseStorageService {
+
   // Uploads an image file to Firebase Storage and returns the download URL
-  static Future<String?> uploadImage(File imageFile) async {
+  static Future<String?> uploadImageToFirebase(File imageFile) async {
     String fileName = basename(imageFile.path);
 
     Reference storageReference =

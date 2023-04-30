@@ -1,46 +1,30 @@
-import 'package:client/widgets/predicting_food/camera_page.dart';
+import 'dart:io';
+import 'dart:math';
 import 'package:client/widgets/food_item_details/food_item_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/history_model.dart';
+import '../../models/history_item.dart';
+import '../../models/prediction_result.dart';
+import '../../models/user_history_model.dart';
+import '../util_views/snackbar_builder.dart';
 
 class PredictionResults extends StatefulWidget {
+  final String? imagePath;
+  final List<PredictedItem> predictedItems;
 
-  final String? foodImage;
-  PredictionResults(this.foodImage);
+  PredictionResults(this.imagePath, this.predictedItems);
 
   @override
   State<PredictionResults> createState() => _PredictionResultsState();
 }
 
 class _PredictionResultsState extends State<PredictionResults> {
-  // List<FoodItem> predictedItems = [
-  //   FoodItem(
-  //     name: "Banana",
-  //   ),
-  //   FoodItem(
-  //     name: "Apple Pie",
-  //   ),
-  //   FoodItem(
-  //     name: "Steak",
-  //   ),
-  //   FoodItem(
-  //     name: "French Fries",
-  //   ),
-  //   FoodItem(
-  //     name: "Cheesecake",
-  //   )
-  // ];
-  List<HistoryItem>predictedItems=[];
-  // String foodImage =
-  //     'https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Apple-Pie_EXPS_MRRA22_6086_E11_03_1b_v3.jpg';
-
-  // List<FoodItem>predictedItems=[];
   int currentItemIndex = 0; // initially points at the top 1 item
   late UserHistoryModel history;
+  bool _isLoading = false;
 
-  Widget showTop1Prediction(HistoryItem historyItem, VoidCallback onEditPress,
-      VoidCallback onAddButtonPress) {
+  Widget showTop1Prediction(HistoryItem topOneHistoryItem,
+      VoidCallback onEditPress, VoidCallback onAddButtonPress) {
     return Card(
       //color: Colors.blue,
       elevation: 4.0,
@@ -48,19 +32,33 @@ class _PredictionResultsState extends State<PredictionResults> {
       child: ListTile(
         onTap: onEditPress,
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(widget.foodImage!),
+          backgroundImage: FileImage(File(widget.imagePath!)),
           radius: 30,
         ),
-        title: Text(historyItem.foodItemDetails.name!,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-        subtitle: Text("${historyItem.calories} kcal"),
-        trailing: IconButton(
-          icon: const Icon(Icons.add_circle_sharp),
-          onPressed: onAddButtonPress,
-          tooltip: "Add item",
+        title: Text(
+          topOneHistoryItem.foodItemDetails.name!,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        subtitle: Text("${topOneHistoryItem.calories} kcal"),
+        trailing: _isLoading
+            ? const SizedBox(
+                height: 30,
+                width: 30,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  //value:10,
+                ),
+              )
+            : IconButton(
+                icon: const SizedBox(
+                  height: 100,
+                  child: Icon(Icons.add_circle_sharp, size: 30),
+                ),
+                onPressed: onAddButtonPress,
+                tooltip: "Add item",
+              ),
       ),
     );
   }
@@ -75,7 +73,7 @@ class _PredictionResultsState extends State<PredictionResults> {
             borderRadius: BorderRadius.circular(15.0),
           ),
         ),
-        child: Text(predictedItems[index].foodItemDetails.name!),
+        child: Text(widget.predictedItems[index].foodItemDetails.name),
       ),
     );
   }
@@ -86,33 +84,35 @@ class _PredictionResultsState extends State<PredictionResults> {
     });
   }
 
-  void onTopOneAddButtonPress(HistoryItem topOneItem) {
-    // TODO: send to backend & based on response show corresponding snackbar
-    history.addHistoryItem(topOneItem);
-    const isRequestSuccessful = true;
-    final snackBar = isRequestSuccessful
-        ? buildSnackBar(
-            'Added Successfully', Colors.green, const Duration(seconds: 1))
-        : buildSnackBar('Error while adding food item! Please try again',
-            Colors.red, const Duration(seconds: 1));
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  void onTopOneAddButtonPress(HistoryItem topOneItem) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final isSuccessful = await history.addHistoryItem(topOneItem);
+      setState(() {
+        _isLoading = false;
+      });
+      if (!isSuccessful) throw Exception();
+
+      final successSnackBar = buildSnackBar(
+          'Added Successfully', Colors.green, const Duration(seconds: 1));
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+    } catch (exception) {
+      final failureSnackBar = buildSnackBar(
+          'Error while adding food item! Please try again',
+          Colors.red,
+          const Duration(seconds: 1));
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(failureSnackBar);
+    }
   }
 
-  SnackBar buildSnackBar(String text, Color color, Duration duration) {
-    return SnackBar(
-      content: Text(text, style: const TextStyle(fontSize: 15)),
-      backgroundColor: color,
-      duration: duration,
-    );
-  }
-
-  List<Widget> buildEmptyBottomSheet() {
+  List<Widget> buildEmptyPredictionResultView() {
     return [
       Container(
-        // width: double.infinity,
         padding: const EdgeInsets.all(30),
-        // alignment: Alignment.center,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const [
@@ -130,28 +130,30 @@ class _PredictionResultsState extends State<PredictionResults> {
     ];
   }
 
-  List<Widget> buildFullBottomSheet() {
-    final topOneItem = predictedItems[currentItemIndex];
-    topOneItem.imageURL = widget.foodImage!;
-    topOneItem.weight = 100.0;
-    // TODO: fetch macros & calories based on qty=1 & weight=100
+  List<Widget> buildFullPredictionResultView() {
+    final topOnePredictedItem = widget.predictedItems[currentItemIndex];
+    final topOneHistoryItem = HistoryItem(
+        id: Random().nextInt(100),
+        imagePath: widget.imagePath,
+        quantity: 1,
+        weight: topOnePredictedItem.weight,
+        foodItemDetails: topOnePredictedItem.foodItemDetails);
     return [
-      showTop1Prediction(topOneItem, () {
+      showTop1Prediction(topOneHistoryItem, () {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => FoodItemPage(
               isCameraPageCaller: true,
-              historyItem: topOneItem,
+              historyItem: topOneHistoryItem,
             ),
           ),
         );
-      }, () => onTopOneAddButtonPress(topOneItem)),
+      }, () => onTopOneAddButtonPress(topOneHistoryItem)),
       const Text(
         "Consider also:",
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          //color: Colors.white,
         ),
       ),
       Container(
@@ -159,9 +161,9 @@ class _PredictionResultsState extends State<PredictionResults> {
         margin: const EdgeInsets.all(5),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: predictedItems.length,
+          itemCount: widget.predictedItems.length,
           itemBuilder: (context, index) {
-            return topOneItem == predictedItems[index]
+            return topOnePredictedItem == widget.predictedItems[index]
                 ? const Text("")
                 : showOtherPredictionItem(index);
           },
@@ -177,7 +179,7 @@ class _PredictionResultsState extends State<PredictionResults> {
 
     return Container(
       width: mediaQuery.size.width,
-      height: 300,
+      height: 325,
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -198,10 +200,10 @@ class _PredictionResultsState extends State<PredictionResults> {
             ),
           ),
           const Divider(thickness: 0.5),
-          if (widget.foodImage==null)
-            ...buildEmptyBottomSheet()
+          if (widget.imagePath == null)
+            ...buildEmptyPredictionResultView()
           else
-            ...buildFullBottomSheet()
+            ...buildFullPredictionResultView()
         ],
       ),
     );

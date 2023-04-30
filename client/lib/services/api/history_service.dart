@@ -1,14 +1,19 @@
-import 'package:client/models/history_model.dart';
+import 'dart:convert';
+import 'dart:io';
+
+import '../../models/history_item.dart';
 import 'common/api_response.dart';
 import 'common/api_consumer.dart';
+import '../firebase_storage.dart';
 
 class HistoryService {
   static const url = "/food-items/history";
   static int userId = 1; // TODO: remove when authentication is done
 
   static Future<ApiResponseList<HistoryItem>> fetchAllHistoryItems(
-      DateTime dateTime) async {
-    String stringDate = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+      DateTime currentDate) async {
+    String stringDate =
+        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
     final response = await ApiConsumer.getList<HistoryItem>(
         '$url/user/$userId', HistoryItem.fromJson,
         queryParameters: {'date': stringDate});
@@ -38,6 +43,26 @@ class HistoryService {
           'quantity': newHistoryItem.quantity
         },
         null);
+    return response;
+  }
+
+  static Future<ApiResponse> addHistoryItem(
+      HistoryItem newHistoryItem, DateTime currentDate) async {
+    String formattedDate =
+        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+    final imageURL=await FirebaseStorageService.uploadImageToFirebase(File(newHistoryItem.imagePath!));
+    final response = await ApiConsumer.post<Object, HistoryItem>(
+        '$url/user/$userId',
+        {
+          'date': formattedDate,
+          'food_item': newHistoryItem.foodItemDetails.id,
+          'weight': newHistoryItem.weight,
+          'quantity': newHistoryItem.quantity,
+          'imageURL':imageURL,
+          'weight_unit':
+              WeightUnitExtension.convertToString(newHistoryItem.weightUnit),
+        },
+        HistoryItem.fromJson);
     return response;
   }
 }
