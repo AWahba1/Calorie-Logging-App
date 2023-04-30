@@ -1,5 +1,7 @@
-import 'package:client/models/history_model.dart';
+import 'package:client/models/user_history_model.dart';
 import 'package:flutter/material.dart';
+
+import '../../models/history_item.dart';
 
 class WeightFieldRow extends StatelessWidget {
   // const WeightFieldRow({Key? key}) : super(key: key);

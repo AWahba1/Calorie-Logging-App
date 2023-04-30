@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../models/history_model.dart';
+import '../../models/history_item.dart';
+import '../../models/user_history_model.dart';
 import 'journal_chart.dart';
 import 'journal_date_picker.dart';
 import 'journal_food_item.dart';
@@ -109,7 +110,7 @@ class _JournalPageState extends State<JournalPage> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: history.historyItems!.length,
                                   itemBuilder: (context, index) {
-                                    return JournalFoodItem(index);
+                                    return JournalFoodItem(history.historyItems!.length-1-index);
                                   }),
                             ],
                           ),

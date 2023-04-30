@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/history_model.dart';
+import '../../models/history_item.dart';
+import '../../models/user_history_model.dart';
 import '../food_item_details/food_item_page.dart';
 
 class JournalFoodItem extends StatelessWidget {
@@ -22,7 +23,7 @@ class JournalFoodItem extends StatelessWidget {
           elevation: 2,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(historyItem.imageURL!),
+              backgroundImage: NetworkImage(historyItem.imagePath!),
               radius: 30,
             ),
             title: Text(

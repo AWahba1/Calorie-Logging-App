@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../models/history_item.dart';
 
-import '../../models/history_model.dart';
 
 class QuantityFieldRow extends StatelessWidget {
   // const QuantityFieldRow({Key? key}) : super(key: key);
