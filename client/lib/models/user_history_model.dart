@@ -102,19 +102,14 @@ class UserHistoryModel with ChangeNotifier {
   Future<bool> addHistoryItem(HistoryItem newItem) async {
     try {
       if (historyItems == null) return false;
-      print(_currentDate);
       final response =
           await HistoryService.addHistoryItem(newItem, _currentDate);
-      print(response.message);
-      print(response.isSuccess);
-      print(response.status);
       if (response.isSuccess) {
         _historyItems!.add(response.data);
         notifyListeners();
       }
       return response.isSuccess;
     } catch (exception) {
-      print(exception.toString());
       return false;
     }
   }
@@ -144,21 +139,4 @@ class UserHistoryModel with ChangeNotifier {
       return false;
     }
   }
-
-// Future<bool> modifyOrAddHistoryItem(HistoryItem item) async {
-//   if (historyItems == null) return false;
-//
-//   try {
-//     int index =
-//         historyItems!.indexWhere((historyItem) => historyItem.id == item.id);
-//     if (index != -1) {
-//       return await modifyHistoryItem(item, index);
-//     } else {
-//       //addHistoryItem(item);
-//       return true;
-//     }
-//   } catch (exception) {
-//     return false;
-//   }
-// }
 }

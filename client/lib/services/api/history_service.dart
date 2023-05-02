@@ -50,7 +50,8 @@ class HistoryService {
       HistoryItem newHistoryItem, DateTime currentDate) async {
     String formattedDate =
         "${currentDate.year}-${currentDate.month}-${currentDate.day}";
-    final imageURL=await FirebaseStorageService.uploadImageToFirebase(File(newHistoryItem.imagePath!));
+    final imageURL = await FirebaseStorageService.uploadImageToFirebase(
+        File(newHistoryItem.imagePath!));
     final response = await ApiConsumer.post<Object, HistoryItem>(
         '$url/user/$userId',
         {
@@ -58,7 +59,7 @@ class HistoryService {
           'food_item': newHistoryItem.foodItemDetails.id,
           'weight': newHistoryItem.weight,
           'quantity': newHistoryItem.quantity,
-          'imageURL':imageURL,
+          'imageURL': imageURL,
           'weight_unit':
               WeightUnitExtension.convertToString(newHistoryItem.weightUnit),
         },
