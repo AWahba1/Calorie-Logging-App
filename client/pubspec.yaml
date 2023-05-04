@@ -45,10 +45,13 @@ dependencies:
   flutter_dotenv: ^5.0.2
   email_validator: ^2.1.17
   flutter_spinkit: ^5.1.0
+  image: ^4.0.16
+  path_provider: ^2.0.14
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -59,6 +62,11 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo.png"
 
 # The following section is specific to Flutter packages.
 flutter:

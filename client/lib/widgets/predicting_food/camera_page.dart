@@ -33,11 +33,8 @@ class _CameraPageState extends State<CameraPage> {
   void initState() {
     super.initState();
 
-    _controller = CameraController(
-      widget.camera,
-      ResolutionPreset.veryHigh,
-      enableAudio: false
-    );
+    _controller = CameraController(widget.camera, ResolutionPreset.veryHigh,
+        enableAudio: false);
     _controller.setFlashMode(FlashMode.off);
 
     _initializeControllerFuture = _controller.initialize();
@@ -109,6 +106,18 @@ class _CameraPageState extends State<CameraPage> {
                 future: _initializeControllerFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Positioned(
+                        top: 200,
+                        left: 20,
+                        child: Text(
+                          "Please enable camera access from the Settings app.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.red),
+                        ),
+                      );
+                    }
                     return Container(
                         height: availableHeight,
                         width: deviceWidth,
