@@ -1,77 +1,57 @@
 
 from django.shortcuts import get_object_or_404
 
-from rest_framework.decorators import api_view
-# from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from utils.unified_http_response.response import UnifiedHttpResponse
 from rest_framework import status
 
-
 from .models import CustomUser
-from .serializers import CustomUserSerializer
-
-from django.contrib.auth import authenticate
-
-
-@api_view(['GET'])
-def get_all_users(request):
-
-    users = CustomUser.objects.all()
-    serializer = CustomUserSerializer(users, many=True)
-    return UnifiedHttpResponse(serializer.data)
+from .custom_user_serializer import CustomUserSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import views
 
 
-@api_view(['GET'])
-def get_user_by_id(request, id):
+class UserListView(views.APIView):
 
-    user = get_object_or_404(CustomUser, pk=id)
-    serializer = CustomUserSerializer(user, many=False)
-    return UnifiedHttpResponse(serializer.data)
-
-
-@api_view(['DELETE'])
-def delete_user(request, id):
-
-    user = get_object_or_404(CustomUser, pk=id)
-    user.delete()
-    return UnifiedHttpResponse()
-
-
-@api_view(['PUT'])
-def update_user(request, id):
-
-    user = get_object_or_404(CustomUser, pk=id)
-    serializer = CustomUserSerializer(instance=user, data=request.data)
-    if serializer.is_valid():
-        try:
-            serializer.save()
-            return UnifiedHttpResponse(serializer.data)
-        except Exception as e:
-            return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
-    return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def sign_up(request):
-
-    serializer = CustomUserSerializer(data=request.data)
-    if serializer.is_valid():
-        try:
-            serializer.save()
-            return UnifiedHttpResponse(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
-    return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def login(request):
-
-    email = request.data['email']
-    password = request.data['password']
-    user = authenticate(request, email=email, password=password)
-    if user is not None:
-        serializer = CustomUserSerializer(instance=user)
+    def get(self, request):
+        users = CustomUser.objects.all()
+        serializer = CustomUserSerializer(users, many=True)
         return UnifiedHttpResponse(serializer.data)
-    else:
-        return UnifiedHttpResponse(message="Please check your email and password and try again!", status=status.HTTP_401_UNAUTHORIZED)
+
+    # Sign up
+    def post(self, request):
+        serializer = CustomUserSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return UnifiedHttpResponse(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
+        return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDetailView(views.APIView):
+
+    def get_object(self, id):
+        return get_object_or_404(CustomUser, pk=id)
+
+    def get(self, request, id):
+        user = self.get_object(id)
+        serializer = CustomUserSerializer(user)
+        return UnifiedHttpResponse(serializer.data)
+
+    def delete(self, request, id):
+        user = self.get_object(id)
+        user.delete()
+        return UnifiedHttpResponse()
+
+    def put(self, request, id):
+        user = self.get_object(id)
+        serializer = CustomUserSerializer(instance=user, data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return UnifiedHttpResponse(serializer.data)
+            except Exception as e:
+                return UnifiedHttpResponse(message=str(e), status=status.HTTP_400_BAD_REQUEST)
+        return UnifiedHttpResponse(message=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

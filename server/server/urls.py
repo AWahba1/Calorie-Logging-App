@@ -23,4 +23,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('food-items/', include('food.urls')),
     path('predict/', include('cnn_model.urls')),
+    path('auth/', include('authentication.urls')),
 ]

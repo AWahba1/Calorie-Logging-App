@@ -1,12 +1,8 @@
 from django.urls import path
-from . import views
+from .views import UserDetailView, UserListView
 
 urlpatterns = [
-    path('login', views.login, name='login'),
-    path('signup', views.sign_up, name='signup'),
-    path('', views.get_all_users, name='users'),
-    path('<int:id>', views.get_user_by_id, name='user'),
-    path('<int:id>/delete', views.delete_user, name='delete-user'),
-    path('<int:id>/update', views.update_user, name='update-user'),
+    path('', UserListView.as_view(), name='users'),
+    path('<int:id>', UserDetailView.as_view(), name='user'),
 
 ]

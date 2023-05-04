@@ -6,6 +6,6 @@ from .views.history_view import UserHistoryListView, UserHistoryDetailView
 urlpatterns = [
     path('', FoodItemList.as_view()),
     path('<int:id>', FoodItemDetail.as_view()),
-    path('history/user/<int:user_id>', UserHistoryListView.as_view()),
+    path('history', UserHistoryListView.as_view()),
     path('history/<int:history_id>', UserHistoryDetailView.as_view()),
 ]

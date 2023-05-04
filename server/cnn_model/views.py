@@ -1,19 +1,21 @@
 
 
-from rest_framework import views
+from rest_framework import views, permissions
 from cnn_model.prediction_result import PredictionResult
-# from rest_framework.response import Response
 from food.models import FoodItem
 from .serializers import ImageSerializer, PredictionResultSerialier
-from .classifier.food_classifer import FoodPredictor
 
 from .apps import CnnModelConfig
 from utils.unified_http_response.response import UnifiedHttpResponse
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class FoodPredictionView(views.APIView):
     prediction_serializer = PredictionResultSerialier
     image_serializer = ImageSerializer
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         if 'image_url' in request.data:

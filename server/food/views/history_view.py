@@ -2,29 +2,35 @@ from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, permissions
 
 
 from ..models import UserHistory
 from ..serializers import UserHistorySerializer
 from utils.unified_http_response.response import UnifiedHttpResponse
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class UserHistoryListView(APIView):
 
-    def get(self, request, user_id):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
         date = request.query_params.get('date')
-        if not date:  # Date is required
+        if not date:
             return UnifiedHttpResponse(message='Date is required', status=400)
 
+        user_id = request.user.id
         history = UserHistory.objects.filter(
             user=user_id, date=date)
         serializer = UserHistorySerializer(history, many=True)
         return UnifiedHttpResponse(serializer.data)
 
-    def post(self, request, user_id):
+    def post(self, request):
         try:
             data = request.data
+            user_id = request.user.id
 
             data['user'] = user_id
             serializer = UserHistorySerializer(data=data)
@@ -40,6 +46,9 @@ class UserHistoryListView(APIView):
 
 
 class UserHistoryDetailView(APIView):
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, id):
         return get_object_or_404(UserHistory, pk=id)
