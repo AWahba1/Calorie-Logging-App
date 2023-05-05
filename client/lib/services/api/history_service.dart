@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
 import '../../models/history_item.dart';
 import 'common/api_response.dart';
 import 'common/api_consumer.dart';
@@ -8,14 +6,13 @@ import '../firebase_storage.dart';
 
 class HistoryService {
   static const url = "/food-items/history";
-  static int userId = 1; // TODO: remove when authentication is done
 
   static Future<ApiResponseList<HistoryItem>> fetchAllHistoryItems(
       DateTime currentDate) async {
     String stringDate =
         "${currentDate.year}-${currentDate.month}-${currentDate.day}";
     final response = await ApiConsumer.getList<HistoryItem>(
-        '$url/user/$userId', HistoryItem.fromJson,
+        url, HistoryItem.fromJson,
         queryParameters: {'date': stringDate});
     return response;
   }
@@ -53,7 +50,7 @@ class HistoryService {
     final imageURL = await FirebaseStorageService.uploadImageToFirebase(
         File(newHistoryItem.imagePath!));
     final response = await ApiConsumer.post<Object, HistoryItem>(
-        '$url/user/$userId',
+        url,
         {
           'date': formattedDate,
           'food_item': newHistoryItem.foodItemDetails.id,

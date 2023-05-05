@@ -46,10 +46,10 @@ class HistoryItem {
       .round();
 
   // macros returned in grams
-  double get fats => (quantity *
+  double get fats => quantity *
       weight *
       (weightUnit == WeightUnit.kg ? 1000 : 1) *
-      foodItemDetails.caloriesPerGram);
+      foodItemDetails.fatsPerGram;
 
   double get protein =>
       quantity *

@@ -29,7 +29,7 @@ class App extends StatelessWidget {
             create: (_) => UserHistoryModel(),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              initialRoute: JournalPage.route,
+              initialRoute: SignUpPage.route,
               routes: {
                 SignUpPage.route: (ctx) => SignUpPage(),
                 LoginPage.route: (ctx) => LoginPage(),

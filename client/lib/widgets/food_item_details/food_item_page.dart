@@ -141,17 +141,17 @@ class _FoodItemPageState extends State<FoodItemPage> {
                             color: Colors.purple),
                         Ring(
                             innerText:
-                                "${historyItem.carbs.toStringAsFixed(1)}.g",
+                                "${historyItem.carbs.toStringAsFixed(1)} g",
                             label: "Carbs",
                             color: Colors.red),
                         Ring(
                             innerText:
-                                "${historyItem.protein.toStringAsFixed(1)}.g",
+                                "${historyItem.protein.toStringAsFixed(1)} g",
                             label: "Protein",
                             color: Colors.orange),
                         Ring(
                             innerText:
-                                "${historyItem.fats.toStringAsFixed(1)}.g",
+                                "${historyItem.fats.toStringAsFixed(1)} g",
                             label: "Fats",
                             color: Colors.green),
                       ],

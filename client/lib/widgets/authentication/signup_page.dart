@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/services/api/auth_service.dart';
 import 'package:client/widgets/authentication/common/bottom_text.dart';
 import 'package:client/widgets/authentication/common/password_field.dart';
 import 'package:client/widgets/authentication/common/submit_form_button.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import 'common/email_field.dart';
 import 'common/error_message.dart';
-import 'package:client/services/api/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   static const route = '/signup';

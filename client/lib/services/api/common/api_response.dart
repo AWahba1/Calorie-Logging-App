@@ -16,13 +16,14 @@ class ApiResponse<T> {
       T Function(Map<String, dynamic> json)? fromJson) {
     /*
       fromJSON=null signifies that caller isn't interested in the 'data' returned by the client
-      json can either be of type List of Maps or just a single Map
       */
     final responseData = json['data'];
     T? data;
-    print(responseData);
     if (responseData != null && fromJson != null) {
       data = fromJson(responseData);
+    }
+    else{
+      data=responseData;
     }
     return ApiResponse(
         message: ApiHelper.formatMessage(json['message']),

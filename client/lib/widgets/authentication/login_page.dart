@@ -8,10 +8,9 @@ import 'package:client/widgets/journaling/journal_page.dart';
 
 import 'package:flutter/material.dart';
 
+import '../../services/api/auth_service.dart';
 import 'common/email_field.dart';
 import 'common/error_message.dart';
-
-import 'package:client/services/api/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   static const route = '/login';
