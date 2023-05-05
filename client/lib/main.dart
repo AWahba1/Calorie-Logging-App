@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:client/models/user_history_model.dart';
+import 'package:client/services/api/common/secure_storage.dart';
 import 'package:client/widgets/predicting_food/camera_page.dart';
 import 'package:client/widgets/loading_screen/initial_loading_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'widgets/authentication/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 void main() async {
   runApp(App());
@@ -18,6 +20,7 @@ void main() async {
 
 class App extends StatelessWidget {
   late final camera;
+  late bool loginAutomatically;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,8 @@ class App extends StatelessWidget {
             create: (_) => UserHistoryModel(),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              initialRoute: SignUpPage.route,
+              initialRoute:
+                  loginAutomatically ? JournalPage.route : LoginPage.route,
               routes: {
                 SignUpPage.route: (ctx) => SignUpPage(),
                 LoginPage.route: (ctx) => LoginPage(),
@@ -69,5 +73,10 @@ class App extends StatelessWidget {
 
     // Load dotenv variables
     await dotenv.load();
+
+    // Check if a refresh token exists
+    final refreshToken = await SecureStorage.getRefreshToken();
+    loginAutomatically =
+        refreshToken != "" && !JwtDecoder.isExpired(refreshToken);
   }
 }
