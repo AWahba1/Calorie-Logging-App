@@ -25,6 +25,7 @@ class AuthService {
       String refreshToken = response.data['refresh_token'];
       SecureStorage.setAccessToken(accessToken);
       SecureStorage.setRefreshToken(refreshToken);
+
     }
     return response;
   }

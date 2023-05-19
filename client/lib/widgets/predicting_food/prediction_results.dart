@@ -11,6 +11,7 @@ import '../util_views/snackbar_builder.dart';
 class PredictionResults extends StatefulWidget {
   final String? imagePath;
   final List<PredictedItem> predictedItems;
+  int currentItemIndex=0;
 
   PredictionResults(this.imagePath, this.predictedItems);
 
@@ -19,7 +20,7 @@ class PredictionResults extends StatefulWidget {
 }
 
 class _PredictionResultsState extends State<PredictionResults> {
-  int currentItemIndex = 0; // initially points at the top 1 item
+  // int currentItemIndex = 0; // initially points at the top 1 item
   late UserHistoryModel history;
   bool _isLoading = false;
 
@@ -80,7 +81,7 @@ class _PredictionResultsState extends State<PredictionResults> {
 
   void onOtherPredictionPress(int index) {
     setState(() {
-      currentItemIndex = index;
+      widget.currentItemIndex = index;
     });
   }
 
@@ -121,7 +122,7 @@ class _PredictionResultsState extends State<PredictionResults> {
             Text("No food items found!"),
             SizedBox(height: 20),
             Text(
-              "Start adding by hovering your camera on the desired food item and tapping the add button.",
+              "Start adding by hovering your camera on the desired food item and tapping the button below.",
               textAlign: TextAlign.center,
             ),
           ],
@@ -131,7 +132,7 @@ class _PredictionResultsState extends State<PredictionResults> {
   }
 
   List<Widget> buildFullPredictionResultView() {
-    final topOnePredictedItem = widget.predictedItems[currentItemIndex];
+    final topOnePredictedItem = widget.predictedItems[widget.currentItemIndex];
     final topOneHistoryItem = HistoryItem(
         id: Random().nextInt(100),
         imagePath: widget.imagePath,

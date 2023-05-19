@@ -28,6 +28,7 @@ class _CameraPageState extends State<CameraPage> {
 
   String? imagePath;
   List<PredictedItem> predictedItems = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -44,13 +45,22 @@ class _CameraPageState extends State<CameraPage> {
     _controller.setFlashMode(FlashMode.off);
     final image = await _controller.takePicture();
 
-    imagePath = await cropImage(File(image.path), 900) ?? image.path;
-    print(imagePath);
-    final imageFile = File(imagePath!);
+    setState(() {
+      _isLoading = true;
+    });
+
+    final newImagePath = await cropImage(File(image.path), 900) ?? image.path;
+    print(newImagePath);
+    final imageFile = File(newImagePath!);
     final response = await PredictionService.predictFromImage(imageFile);
+
+    setState(() {
+      _isLoading = false;
+    });
+
     if (response.isSuccess) {
       setState(() {
-        //imagePath = image.path;
+        imagePath = newImagePath;
         predictedItems = response.data!;
       });
     } else {
@@ -87,7 +97,6 @@ class _CameraPageState extends State<CameraPage> {
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
     final deviceWidth = size.width;
-    //print(availableHeight);
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
@@ -132,11 +141,37 @@ class _CameraPageState extends State<CameraPage> {
                 bottom: mediaQuery.padding.bottom,
                 child: PredictionResults(imagePath, predictedItems),
               ),
+              Positioned(
+                bottom: mediaQuery.padding.bottom + 10,
+                left: 10,
+                child: Container(
+                  height: 45,
+                  width: deviceWidth - 20,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: _isLoading ? null : getPredictions,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 24.0,
+                            width: 24.0,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              strokeWidth: 3.0,
+                            ),
+                          )
+                        : const Text("Identify Food Item"),
+                  ),
+                ),
+              )
             ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: getPredictions,
-            child: const Icon(Icons.add),
           ),
         ),
       ),
