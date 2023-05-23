@@ -1,101 +1,120 @@
-Apple pie
-Baby back ribs
+Red Apple
+Apple Pie
+Baby Back Ribs
 Baklava
-Beef carpaccio
-Beef tartare
-Beet salad
+Banana
+Beef Carpaccio
+Beef Tartare
+Beet Salad
 Beignets
 Bibimbap
-Bread pudding
-Breakfast burrito
+Bread Pudding
+Breakfast Burrito
 Bruschetta
-Caesar salad
+Caesar Salad
 Cannoli
-Caprese salad
-Carrot cake
+Caprese Salad
+Carrot
+Carrot Cake
 Ceviche
+Cheese Plate
 Cheesecake
-Cheese plate
-Chicken curry
-Chicken quesadilla
-Chicken wings
-Chocolate cake
-Chocolate mousse
+Chicken Curry
+Chicken Quesadilla
+Chicken Wings
+Chocolate Cake
+Chocolate Mousse
 Churros
-Clam chowder
-Club sandwich
-Crab cakes
-Creme brulee
-Croque madame
-Cup cakes
-Deviled eggs
+Clam Chowder
+Club Sandwich
+Corn
+Crab Cakes
+Creme Brulee
+Croque Madame
+Cucumber
+Cup Cakes
+Deviled Eggs
 Donuts
 Dumplings
 Edamame
-Eggs benedict
+Eggs Benedict
 Escargots
 Falafel
-Filet mignon
-Fish and chips
-Foie gras
-French fries
-French onion soup
-French toast
-Fried calamari
-Fried rice
-Frozen yogurt
-Garlic bread
+Filet Mignon
+Fish and Chips
+Foie Gras
+French Fries
+French Onion Soup
+French Toast
+Fried Calamari
+Fried Rice
+Frozen Yogurt
+Garlic Bread
 Gnocchi
-Greek salad
-Grilled cheese sandwich
-Grilled salmon
+Purple Grape
+White Grape
+Greek Salad
+Green Apple
+Grilled Cheese Sandwich
+Grilled Salmon
 Guacamole
 Gyoza
 Hamburger
-Hot and sour soup
-Hot dog
-Huevos rancheros
+Hot and Sour Soup
+Hot Dog
+Huevos Rancheros
 Hummus
-Ice cream
+Ice Cream
+Peach
+Kiwi
 Lasagna
-Lobster bisque
-Lobster roll sandwich
-Macaroni and cheese
+Lemon
+Lobster Bisque
+Lobster Roll Sandwich
+Macaroni and Cheese
 Macarons
-Miso soup
+Mango
+Miso Soup
 Mussels
 Nachos
 Omelette
-Onion rings
+Onion
+Onion Rings
 Oysters
-Pad thai
+Pad Thai
 Paella
 Pancakes
-Panna cotta
-Peking duck
+Panna Cotta
+Peking Duck
 Pho
+Pineapple
 Pizza
-Pork chop
+Pork Chop
+Potato
 Poutine
-Prime rib
-Pulled pork sandwich
+Prime Rib
+Pulled Pork Sandwich
 Ramen
 Ravioli
-Red velvet cake
+Red Grape
+Red Velvet Cake
 Risotto
 Samosa
 Sashimi
 Scallops
-Seaweed salad
-Shrimp and grits
-Spaghetti bolognese
-Spaghetti carbonara
-Spring rolls
+Seaweed Salad
+Shrimp and Grits
+Spaghetti Bolognese
+Spaghetti Carbonara
+Spring Rolls
 Steak
-Strawberry shortcake
+Strawberry
+Strawberry Shortcake
 Sushi
 Tacos
 Takoyaki
 Tiramisu
-Tuna tartare
+Tomato
+Tuna Tartare
 Waffles
+Watermelon

@@ -4,6 +4,7 @@ from tensorflow import keras
 from keras.models import load_model
 from keras.utils import img_to_array
 import numpy as np
+from keras.metrics import top_k_categorical_accuracy
 
 import requests
 from PIL import Image
@@ -18,9 +19,12 @@ class FoodPredictor:
             os.path.dirname(os.path.abspath(__file__)), 'weights.h5')
         self.model = None
         self.class_list = self.get_classes_list()
+    
+    def top_5_accuracy(y_true, y_pred):
+        return top_k_categorical_accuracy(y_true, y_pred, k=5)
 
     def load_model(self):
-        self.model = load_model(self.model_path)
+        self.model = load_model(self.model_path,custom_objects={'top_5_accuracy': self.top_5_accuracy})
         self.model.load_weights(self.weights_path)
 
     def get_classes_list(self):
@@ -45,10 +49,6 @@ class FoodPredictor:
 
     def preprocess_image(self, food_image):
         try:
-            IMG_SIZE = (224, 224)
-
-            # Resizing the image to be used as input for the model
-            food_image = food_image.resize(IMG_SIZE)
             img_array = img_to_array(food_image)
 
             # Normalizing the image
@@ -59,8 +59,8 @@ class FoodPredictor:
             raise Exception(f"Problem preprocessing image - {e}")
 
     def predict(self, image, n_top_items=5, is_url=False):
-        img = self.load_image(image, is_url)
-        img_array = self.preprocess_image(img)
+        # img = self.load_image(image, is_url)
+        img_array = self.preprocess_image(image)
 
         predictions = self.model.predict(img_array)
 

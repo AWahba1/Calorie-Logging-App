@@ -9,6 +9,10 @@
 Icon
 
 
+### Models ###
+*.h5
+
+
 # Thumbnails
 ._*
 
