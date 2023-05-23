@@ -1,0 +1,11 @@
+apple
+banana
+grape
+green_apple
+grape_white
+juicy_peach
+kiwi_fruit
+lemon
+mango
+pineapple
+red_grape
