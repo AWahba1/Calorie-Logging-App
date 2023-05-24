@@ -33,7 +33,7 @@ class App extends StatelessWidget {
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               initialRoute:
-                  loginAutomatically ? JournalPage.route : LoginPage.route,
+                  loginAutomatically ? LoginPage.route : LoginPage.route,
               routes: {
                 SignUpPage.route: (ctx) => SignUpPage(),
                 LoginPage.route: (ctx) => LoginPage(),
@@ -78,5 +78,6 @@ class App extends StatelessWidget {
     final refreshToken = await SecureStorage.getRefreshToken();
     loginAutomatically =
         refreshToken != "" && !JwtDecoder.isExpired(refreshToken);
+    // loginAutomatically = false;
   }
 }

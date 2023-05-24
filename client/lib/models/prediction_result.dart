@@ -8,6 +8,7 @@ class PredictedItem {
   const PredictedItem({required this.weight, required this.foodItemDetails});
 
   factory PredictedItem.fromJson(Map<String, dynamic> json) {
+
     return PredictedItem(
       weight: json['weight'],
       foodItemDetails: FoodItemDetails.fromJson(json['food_item_details']),

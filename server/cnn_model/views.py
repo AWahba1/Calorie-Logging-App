@@ -85,7 +85,7 @@ class FoodPredictionView(views.APIView):
                 food_item_details = FoodItem.objects.get(name=food_class)
 
                 object_prediction = {
-                    'weight': 100,
+                    'weight': 100.0,
                     'food_item_details': FoodItemSerializer(food_item_details).data
                 }
 

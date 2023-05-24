@@ -111,7 +111,7 @@ class ApiConsumer {
         jsonDecode(response.body), response.statusCode, fromJson);
   }
 
-  static Future<ApiResponseList<T>> uploadSingleFile<T>(
+  static Future<ApiResponse2DList<T>> uploadSingleFile<T>(
       String path,
       String fieldName,
       File file,
@@ -149,7 +149,8 @@ class ApiConsumer {
     }
     String responseBodyString =
         await response.stream.transform(utf8.decoder).join();
-    return ApiResponseList.fromJson(
+
+    return ApiResponse2DList.fromJson(
         jsonDecode(responseBodyString), response.statusCode, fromJson);
   }
 }

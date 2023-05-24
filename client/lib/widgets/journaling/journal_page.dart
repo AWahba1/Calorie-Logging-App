@@ -110,8 +110,12 @@ class _JournalPageState extends State<JournalPage> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: history.historyItems!.length,
                                   itemBuilder: (context, index) {
-                                    return JournalFoodItem(history.historyItems!.length-1-index);
+                                    return JournalFoodItem(
+                                        history.historyItems!.length -
+                                            1 -
+                                            index);
                                   }),
+                              const SizedBox(height: 65)
                             ],
                           ),
                   ),

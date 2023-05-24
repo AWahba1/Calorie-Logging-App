@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:client/services/api/prediction_service.dart';
+import 'package:client/widgets/predicting_food/prediction_results.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../models/prediction_result.dart';
-import 'prediction_results.dart';
 import 'package:image/image.dart' as img;
 
 class CameraPage extends StatefulWidget {
@@ -27,8 +27,8 @@ class _CameraPageState extends State<CameraPage> {
   late Future<void> _initializeControllerFuture;
 
   String? imagePath;
-  List<PredictedItem> predictedItems = [];
-  bool _isLoading = false;
+  List<List<PredictedItem>> predictedItems = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _CameraPageState extends State<CameraPage> {
     final image = await _controller.takePicture();
 
     setState(() {
-      _isLoading = true;
+      isLoading = true;
     });
 
     final newImagePath = await cropImage(File(image.path), 900) ?? image.path;
@@ -55,7 +55,7 @@ class _CameraPageState extends State<CameraPage> {
     final response = await PredictionService.predictFromImage(imageFile);
 
     setState(() {
-      _isLoading = false;
+      isLoading = false;
     });
 
     if (response.isSuccess) {
@@ -139,38 +139,39 @@ class _CameraPageState extends State<CameraPage> {
               ),
               Positioned(
                 bottom: mediaQuery.padding.bottom,
-                child: PredictionResults(imagePath, predictedItems),
+                child: PredictionResults(
+                    imagePath, predictedItems, getPredictions, isLoading),
               ),
-              Positioned(
-                bottom: mediaQuery.padding.bottom + 10,
-                left: 10,
-                child: Container(
-                  height: 45,
-                  width: deviceWidth - 20,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: _isLoading ? null : getPredictions,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 24.0,
-                            width: 24.0,
-                            child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                              strokeWidth: 3.0,
-                            ),
-                          )
-                        : const Text("Identify Food Item"),
-                  ),
-                ),
-              )
+              // Positioned(
+              //   bottom: mediaQuery.padding.bottom + 10,
+              //   left: 10,
+              //   child: Container(
+              //     height: 45,
+              //     width: deviceWidth - 20,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(8.0),
+              //         ),
+              //         textStyle: const TextStyle(
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //       onPressed: _isLoading ? null : getPredictions,
+              //       child: _isLoading
+              //           ? const SizedBox(
+              //               height: 24.0,
+              //               width: 24.0,
+              //               child: CircularProgressIndicator(
+              //                 valueColor:
+              //                     AlwaysStoppedAnimation<Color>(Colors.white),
+              //                 strokeWidth: 3.0,
+              //               ),
+              //             )
+              //           : const Text("Identify Food Item"),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

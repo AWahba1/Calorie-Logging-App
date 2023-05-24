@@ -21,9 +21,8 @@ class ApiResponse<T> {
     T? data;
     if (responseData != null && fromJson != null) {
       data = fromJson(responseData);
-    }
-    else{
-      data=responseData;
+    } else {
+      data = responseData;
     }
     return ApiResponse(
         message: ApiHelper.formatMessage(json['message']),
@@ -55,6 +54,45 @@ class ApiResponseList<T> {
     }
 
     return ApiResponseList(
+      message: ApiHelper.formatMessage(json['message']),
+      data: data,
+      status: statusCode,
+      isSuccess: statusCode >= 200 && statusCode <= 299,
+    );
+  }
+}
+
+class ApiResponse2DList<T> {
+  final String message; // comma separated if multiple errors exist
+  final List<List<T>>? data;
+  final int status;
+  final bool isSuccess;
+
+  ApiResponse2DList({
+    required this.message,
+    required this.data,
+    required this.status,
+    required this.isSuccess,
+  });
+
+  factory ApiResponse2DList.fromJson(
+    Map<String, dynamic> json,
+    int statusCode,
+    T Function(Map<String, dynamic> json)? fromJson,
+  ) {
+    List<List<T>>? data = <List<T>>[];
+    final responseData = json['data'];
+    if (responseData != null && responseData.length > 0) {
+      for (int i = 0; i < responseData.length; i++) {
+        data.add([]);
+        for (int j = 0; j < responseData[i].length; j++) {
+          final predictedItem = fromJson!(responseData[i][j]);
+          data[i].add(predictedItem);
+        }
+      }
+    }
+
+    return ApiResponse2DList(
       message: ApiHelper.formatMessage(json['message']),
       data: data,
       status: statusCode,
