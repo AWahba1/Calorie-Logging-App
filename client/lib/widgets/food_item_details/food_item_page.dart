@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/history_item.dart';
 import '../../models/user_history_model.dart';
+import '../util_views/snackbar_builder.dart';
 
 class FoodItemPage extends StatefulWidget {
   static const route = '/food-item';
@@ -96,6 +97,10 @@ class _FoodItemPageState extends State<FoodItemPage> {
     });
     if (isSuccess) {
       Navigator.of(context).pop();
+      final successSnackBar = buildSnackBar(
+          'Added Successfully', Colors.green, const Duration(seconds: 1));
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
     } else {
       showErrorAlertDialog(context);
     }
@@ -120,17 +125,18 @@ class _FoodItemPageState extends State<FoodItemPage> {
               child: Column(
                 children: [
                   Container(
-                    height: 250,
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 15),
-                    child: widget.isCameraPageCaller
-                        ? Image.file(File(historyItem.imagePath!),
-                            fit: BoxFit.cover)
-                        : Image.network(
-                            historyItem.imagePath!,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
+                      height: 250,
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 15),
+                      child: historyItem.imagePath!.startsWith('http') ||
+                              historyItem.imagePath!.startsWith('https')
+                          ? Image.network(
+                              historyItem.imagePath!,
+                              fit: BoxFit.cover,
+                              // filterQuality: FilterQuality.high,
+                            )
+                          : Image.file(File(historyItem.imagePath!),
+                              fit: BoxFit.cover)),
                   Container(
                     width: double.infinity,
                     child: Row(
@@ -166,7 +172,6 @@ class _FoodItemPageState extends State<FoodItemPage> {
                     historyItem,
                     (val) {
                       setState(() {
-                        //TODO: macros recalculation
                         if (val.isEmpty) val = "0";
                         historyItem.quantity = int.parse(val);
                       });

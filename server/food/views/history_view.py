@@ -4,8 +4,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 
+from food.nutritionx import NutritionxAPI
 
-from ..models import UserHistory
+
+from ..models import FoodItem, UserHistory
 from ..serializers import UserHistorySerializer
 from utils.unified_http_response.response import UnifiedHttpResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -36,6 +38,16 @@ class UserHistoryListView(APIView):
             serializer = UserHistorySerializer(data=data)
 
             if serializer.is_valid():
+                if data['food_item'] is None:  # Manual Entry
+                    nutritionix_api = NutritionxAPI()
+                    food_item_id = nutritionix_api.add_food_item(
+                        data['food_name'])
+                    if food_item_id is not None:
+                        serializer.validated_data['food_item'] = FoodItem.objects.get(
+                            id=food_item_id)
+                    else:
+                        return UnifiedHttpResponse(message='Error while adding food item')
+
                 serializer.save()
                 return UnifiedHttpResponse(serializer.data, status=201)
             else:

@@ -20,6 +20,11 @@ class UserHistorySerializer(serializers.ModelSerializer):
     imageURL = serializers.URLField(required=True)
     weight_unit = serializers.CharField(max_length=2,)
 
+    food_item = serializers.PrimaryKeyRelatedField(
+        queryset=FoodItem.objects.all(),
+        allow_null=True,
+    )
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['food_item'] = FoodItemSerializer(

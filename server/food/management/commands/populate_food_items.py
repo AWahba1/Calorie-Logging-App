@@ -14,8 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Read labels.txt
         labels_file_path = os.path.join(
-            BASE_DIR, 'cnn_model', 'classifier','food_classes.txt')
-            
+            BASE_DIR, 'cnn_model', 'classifier', 'food_classes.txt')
 
         with open(labels_file_path, 'r') as labels_file:
             labels = [label.strip() for label in labels_file.readlines()]
@@ -24,8 +23,8 @@ class Command(BaseCommand):
         nutritionix_api = NutritionxAPI()
         for food_name in labels:
             try:
-                isSuccess = nutritionix_api.search_food(food_name)
-                if isSuccess:
+                food_item_id = nutritionix_api.add_food_item(food_name)
+                if food_item_id is not None:
                     self.stdout.write(self.style.SUCCESS(
                         f'Successfully added "{food_name}" to the food items table'))
                 else:

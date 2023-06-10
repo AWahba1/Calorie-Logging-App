@@ -17,7 +17,7 @@ class NutritionxAPI:
             'x-remote-user-id': '0',
         }
 
-    def search_food(self, food_name):
+    def add_food_item(self, food_name):
         params = {
             "query": food_name,
             "detailed": "true",
@@ -28,11 +28,11 @@ class NutritionxAPI:
             self.base_url, params=params, headers=self.headers)
         if response.status_code == 200:
             data = response.json()
-            self.create_food_item(food_name, data)
-            return True
+            food_item_id = self.create_food_item(food_name, data)
+            return food_item_id
         else:
             print(response.status_code)
-            return False
+            return None
 
     def create_food_item(self, food_name, data):
         item = data["common"][0]
@@ -48,6 +48,8 @@ class NutritionxAPI:
             fats_per_gram=food_nutrients["fat"],
         )
         food_item.save()
+
+        return food_item.id
 
     def get_nutrients(self, food_item_weight, food_item_nutrients):
         nutrients = {}
