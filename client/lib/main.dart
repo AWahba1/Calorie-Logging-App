@@ -3,6 +3,7 @@ import 'package:client/models/user_history_model.dart';
 import 'package:client/services/api/common/secure_storage.dart';
 import 'package:client/widgets/predicting_food/camera_page.dart';
 import 'package:client/widgets/loading_screen/initial_loading_screen.dart';
+import 'package:client/widgets/search_screen/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -33,12 +34,13 @@ class App extends StatelessWidget {
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               initialRoute:
-                  loginAutomatically ? LoginPage.route : LoginPage.route,
+                  loginAutomatically ? JournalPage.route : LoginPage.route,
               routes: {
                 SignUpPage.route: (ctx) => SignUpPage(),
                 LoginPage.route: (ctx) => LoginPage(),
                 JournalPage.route: (ctx) => JournalPage(),
                 CameraPage.route: (ctx) => CameraPage(camera: camera),
+                SearchPage.route: (ctx) => SearchPage(),
               },
             ),
           );

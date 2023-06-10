@@ -2,6 +2,7 @@ import 'package:client/widgets/predicting_food/prediction_item_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/prediction_result.dart';
+import '../search_screen/search_page.dart';
 
 class PredictionResults extends StatelessWidget {
   final List<List<PredictedItem>> predictedItems;
@@ -34,7 +35,7 @@ class PredictionResults extends StatelessWidget {
     ];
   }
 
-  Widget showManualEntryOption() {
+  Widget showManualEntryOption(BuildContext context) {
     return Row(
       children: [
         const Text(
@@ -43,7 +44,9 @@ class PredictionResults extends StatelessWidget {
             fontStyle: FontStyle.italic,
           ),
         ),
-        TextButton(onPressed: () {}, child: const Text("Add manually"))
+        TextButton(onPressed:(){
+          Navigator.pushNamed(context, SearchPage.route);
+        }, child: const Text("Add manually"))
       ],
     );
   }
@@ -106,7 +109,7 @@ class PredictionResults extends StatelessWidget {
                                   imagePath, predictedItems[index]);
                             },
                           ),
-                          showManualEntryOption(),
+                          showManualEntryOption(context),
                           const SizedBox(height: 10)
                         ],
                       ),

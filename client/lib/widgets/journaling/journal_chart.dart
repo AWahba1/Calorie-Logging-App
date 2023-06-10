@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class JournalChart extends StatelessWidget {
@@ -15,6 +16,12 @@ class JournalChart extends StatelessWidget {
       required this.totalProteins,
       required this.totalCarbs});
 
+  String formatCalories(int calories) {
+    final formatter = NumberFormat('#,##0');
+    String formattedString = formatter.format(calories);
+    return formattedString;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +33,7 @@ class JournalChart extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Consumed Calories: $totalCalories",
+              "Consumed Calories: ${formatCalories(totalCalories)}",
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 10),
