@@ -98,7 +98,7 @@ class _FoodItemPageState extends State<FoodItemPage> {
     if (isSuccess) {
       Navigator.of(context).pop();
       final successSnackBar = buildSnackBar(
-          'Added Successfully', Colors.green, const Duration(seconds: 1));
+          '${widget.isCameraPageCaller?"Added":"Edited"} Successfully', Colors.green, const Duration(seconds: 1));
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
     } else {
