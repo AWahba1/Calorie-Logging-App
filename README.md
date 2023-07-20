@@ -1,4 +1,8 @@
-# Calorie-Logging-App
+<h1 style="margin-bottom:0" align="center">Calorie-Logging-App</h1>
+
+<p  align="center">A mobile app designed to automate the calorie logging process by enabling users to log the calories in their meals automatically from an image captured by their mobile devices.</p>
+
+<br>
 
 ## Table of Contents
 
