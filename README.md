@@ -42,6 +42,12 @@ The app is built using the following technologies:
 
 
 ## Demo
+
+
+https://github.com/AWahba1/Calorie-Logging-App/assets/87873253/ca22395c-f867-45a5-b2ae-d02d7bf70419
+
+
+
 To view the full demo, please click [here](https://drive.google.com/file/d/1LAABnp87Q12hHtuluHlF7ckRTzJmuC9I/view?usp=sharing).
 
 ## Thesis
