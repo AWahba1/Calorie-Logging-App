@@ -1,5 +1,4 @@
 <br>
-<br>
 <h1 style="margin-bottom:0; margin-top:50;" align="center">Calorie-Logging-App</h1>
 
 <p  align="center">A mobile app designed to automate the calorie logging process by enabling users to log the calories in their meals automatically from an image captured by their mobile devices.</p>
@@ -51,7 +50,7 @@ The Calorie Logging App was developed with a mission to empower users in taking 
   - Users can create, read, update, and delete food logs for any day, allowing them to track their calorie intake easily.
 
 ## Design Overview
-Our solution consists mainly of 3 main components:
+Our solution consists mainly of 3 main components/steps:
 
 1. Classification Model that predicts that food item within a given image.
 2. Segmentation Model that helps to determine the location of all the possible food items in the image. This step is crucial to be able to identify and categorize multiple food items in the input image.
