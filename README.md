@@ -58,6 +58,8 @@ Our solution consists mainly of 3 main components/steps:
 
 The following schematic shows the full process taken for identifying both the possible food categories in the image as well as their corresponding calories and macronutrients.
 
+<br><br>
+
 ![Screenshot_28](https://github.com/AWahba1/Calorie-Logging-App/assets/87873253/3fad072a-d121-48d0-9dab-2602d7b3c60b)
 
 
@@ -73,7 +75,7 @@ The app is built using the following technologies:
 
 ## Demo
 
-To view the full demo, please click [here](https://drive.google.com/file/d/1LAABnp87Q12hHtuluHlF7ckRTzJmuC9I/view?usp=sharing).
+To view a full demo of the app, please click [here](https://drive.google.com/file/d/1LAABnp87Q12hHtuluHlF7ckRTzJmuC9I/view?usp=sharing).
 
 ## Thesis
 To access the thesis document, please click [here](https://drive.google.com/file/d/17XcDl33Y10mDkyID60HMMTfI7UBYS25G/view?usp=sharing).
